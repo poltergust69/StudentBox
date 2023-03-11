@@ -1,6 +1,6 @@
 package com.studentbox.api.common;
 
-import com.studentbox.api.entities.Role;
+import com.studentbox.api.entities.user.Role;
 import com.studentbox.api.exception.NotAuthenticatedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

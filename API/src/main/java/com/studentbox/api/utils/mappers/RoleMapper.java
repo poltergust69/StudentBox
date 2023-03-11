@@ -1,7 +1,7 @@
 package com.studentbox.api.utils.mappers;
 
-import com.studentbox.api.entities.Role;
-import com.studentbox.api.models.RoleModel;
+import com.studentbox.api.entities.user.Role;
+import com.studentbox.api.models.role.RoleModel;
 
 import java.util.List;
 import java.util.stream.Collectors;

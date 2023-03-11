@@ -1,6 +1,6 @@
-package com.studentbox.api.models;
+package com.studentbox.api.models.role;
 
-import com.studentbox.api.entities.Role;
+import com.studentbox.api.entities.user.Role;
 import lombok.Data;
 
 @Data

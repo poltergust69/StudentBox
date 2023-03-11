@@ -1,4 +1,4 @@
-package com.studentbox.api.entities;
+package com.studentbox.api.entities.user;
 
 import lombok.Data;
 import lombok.Getter;

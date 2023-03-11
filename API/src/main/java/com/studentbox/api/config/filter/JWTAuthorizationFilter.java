@@ -4,7 +4,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studentbox.api.common.CustomAuthentication;
 import com.studentbox.api.config.SecurityConfig;
-import com.studentbox.api.models.UserDetailsModel;
+import com.studentbox.api.models.user.UserDetailsModel;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -14,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
 
 import static java.util.Objects.isNull;
 

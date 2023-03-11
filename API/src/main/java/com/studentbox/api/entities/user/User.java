@@ -1,4 +1,4 @@
-package com.studentbox.api.entities;
+package com.studentbox.api.entities.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,14 +17,20 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @Column(unique = true)
+    private String username;
+
     private String password;
+
+    private String avatarUrl;
 
     @ManyToOne
     private Role role;
 
-    public User(String email, String password, Role role) {
+    public User(String email, String username, String password, Role role) {
         this.id = UUID.randomUUID();
         this.email = email;
+        this.username = username;
         this.password = password;
         this.role = role;
     }
