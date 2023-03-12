@@ -11,8 +11,10 @@ import com.studentbox.api.service.PostService;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -22,24 +24,40 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
     @GetMapping
-    @ApiOperation(value="Get a page of posts.", response = RoleModel.class)
+    @ApiOperation(value="Get a page of posts.", response = PostModel[].class)
     public ResponseEntity<List<PostModel>> getPageOfPosts(
             PaginationModel paginationModel
         ){
         return ResponseEntity.ok(postService.getPage(paginationModel));
     }
 
+    @GetMapping("/{postId}")
+    @ApiOperation(value="Get the post with the ID requested.", response = PostModel.class)
+    public ResponseEntity<PostModel> getPost(
+            @PathVariable String postId
+    ){
+        return ResponseEntity.ok(postService.findBasicById(postId));
+    }
+
+
     @PostMapping
-    @ApiOperation(value="Create a new post.", response = RoleModel.class)
+    @ApiOperation(value="Create a new post.")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity createPost(
             PostCreationModel postCreationModel
     ){
-        postService.create(postCreationModel);
+        try{
+            postService.create(postCreationModel);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{postId}")
-    @ApiOperation(value="Delete a post.", response = RoleModel.class)
+    @ApiOperation(value="Delete a post.")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity deletePost(
             @PathVariable String postId
     ){
@@ -48,7 +66,8 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}")
-    @ApiOperation(value="Modify a post.", response = RoleModel.class)
+    @ApiOperation(value="Modify a post.")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity updatePost(
             @PathVariable String postId,
             PostModificationModel postModificationModel
@@ -58,7 +77,8 @@ public class PostController {
     }
 
     @PutMapping("/{postId}/like")
-    @ApiOperation(value="Like a post.", response = RoleModel.class)
+    @ApiOperation(value="Like a post.")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity likePost(
             @PathVariable String postId
     ){
@@ -66,8 +86,9 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation(value="Add a reply to a post.", response = RoleModel.class)
+    @ApiOperation(value="Add a reply to a post.")
     @PostMapping("/{postId}/reply")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity createReplyToPost(
             @PathVariable String postId,
             PostReplyCreationModel postReplyCreationModel
@@ -76,8 +97,9 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation(value="Modify a reply.", response = RoleModel.class)
+    @ApiOperation(value="Modify a reply.")
     @PatchMapping("/{postId}/reply/{replyId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity updateReplyToPost(
             @PathVariable String postId,
             @PathVariable String replyId,
@@ -86,9 +108,9 @@ public class PostController {
         postService.updateReply(postId, replyId, postReplyModificationModel);
         return ResponseEntity.ok().build();
     }
-
-    @ApiOperation(value="Delete a reply.", response = RoleModel.class)
+    @ApiOperation(value="Delete a reply.")
     @DeleteMapping("/{postId}/reply/{replyId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity deleteReplyToPost(
             @PathVariable String postId,
             @PathVariable String replyId
@@ -97,8 +119,9 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation(value="Like reply.", response = RoleModel.class)
+    @ApiOperation(value="Like reply.")
     @PatchMapping("/{postId}/reply/{replyId}/like")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity likeReplyToPost(
             @PathVariable String postId,
             @PathVariable String replyId

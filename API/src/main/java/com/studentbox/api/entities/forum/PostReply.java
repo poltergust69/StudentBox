@@ -2,6 +2,7 @@ package com.studentbox.api.entities.forum;
 
 import com.studentbox.api.entities.user.User;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name="post_replies")
+@NoArgsConstructor
 public class PostReply {
     @Id
     private UUID id;

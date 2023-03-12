@@ -1,5 +1,6 @@
 package com.studentbox.api.service.impl;
 
+import com.studentbox.api.common.CustomAuthentication;
 import com.studentbox.api.entities.forum.Post;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.exception.NotFoundException;
@@ -14,7 +15,6 @@ import com.studentbox.api.service.PostLikesService;
 import com.studentbox.api.service.PostRepliesService;
 import com.studentbox.api.service.PostService;
 import com.studentbox.api.service.UserService;
-import com.studentbox.api.utils.containers.SharedMethodContainer;
 import com.studentbox.api.utils.mappers.PostMapper;
 import com.studentbox.api.utils.validators.PostValidator;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,12 +52,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void create(PostCreationModel postCreationModel) {
-        String authorizedUser = SharedMethodContainer.getCurrentAuthorizedUser();
 
         PostValidator.validatePost(postCreationModel);
 
-        UUID authorId = UUID.fromString(authorizedUser);
-        User author = userService.findById(authorId);
+        User author = userService.findAuthenticatedUser();
         Post post = new Post(postCreationModel, author);
 
         try{
@@ -107,19 +104,14 @@ public class PostServiceImpl implements PostService {
     @Override
     public void like(String id) {
         Post post = findById(id);
-
-        String principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        UUID userId = UUID.fromString(principal);
-        User user = userService.findById(userId);
+        User user = userService.findAuthenticatedUser();
         postLikesService.toggleLike(post, user);
     }
 
     @Override
     public void createReply(String postId, PostReplyCreationModel postReplyModel) {
         Post post = findById(postId);
-        String principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        UUID userId = UUID.fromString(principal);
-        User user = userService.findById(userId);
+        User user = userService.findAuthenticatedUser();
 
         postRepliesService.create(post, user, postReplyModel);
     }
@@ -136,9 +128,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void likeReply(String postId, String replyId) {
-        String principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        UUID userId = UUID.fromString(principal);
-        User user = userService.findById(userId);
+        User user = userService.findAuthenticatedUser();
 
         postRepliesService.like(postId, replyId, user);
     }

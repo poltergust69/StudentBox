@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +78,7 @@ public class PostRepliesServiceImpl implements PostRepliesService {
         validatePostReply(postReplyCreationModel);
 
         postReply.setContent(postReplyCreationModel.getContent());
+        postReply.setModifiedAt(Timestamp.from(Instant.now()));
 
         postReplyRepository.save(postReply);
     }
