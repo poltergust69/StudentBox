@@ -1,6 +1,6 @@
 package com.studentbox.api.common;
 
-import com.studentbox.api.entities.Role;
+import com.studentbox.api.entities.user.Role;
 import com.studentbox.api.exception.NotAuthenticatedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 public class CustomAuthentication implements Authentication {
     private Role userRole;
@@ -56,11 +57,11 @@ public class CustomAuthentication implements Authentication {
         return name;
     }
 
-    public static Long getAuthenticationPrincipal() {
-        Authentication authentication = getAuthentication();
+    public static UUID getAuthenticationPrincipal() {
+        CustomAuthentication authentication = getAuthentication();
 
-        if(authentication.getPrincipal() instanceof Long id){
-            return id;
+        if(authentication.getPrincipal() instanceof String id){
+            return UUID.fromString(id);
         }
         throw new NotAuthenticatedException();
     }

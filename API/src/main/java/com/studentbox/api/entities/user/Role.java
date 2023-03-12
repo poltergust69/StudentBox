@@ -1,15 +1,13 @@
-package com.studentbox.api.entities;
+package com.studentbox.api.entities.user;
 
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.UUID;
+
+import static com.studentbox.api.utils.containers.ConstantsContainer.ROLE_PREFIX;
 
 @Data
 @Entity
@@ -22,6 +20,9 @@ public class Role implements GrantedAuthority {
     @Column(unique = true)
     private String name;
 
+    @Transient
+    private String authority;
+
     public Role(String name) {
         this.id = UUID.randomUUID();
         this.name = name;
@@ -29,6 +30,6 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return name;
+        return ROLE_PREFIX + name;
     }
 }
