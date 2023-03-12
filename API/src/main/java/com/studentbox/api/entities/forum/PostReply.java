@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -29,4 +30,15 @@ public class PostReply {
 
     @Column(name="modified_at")
     private Timestamp modifiedAt;
+
+    public PostReply(Post post, User author, String content) {
+        this.id = UUID.randomUUID();
+        this.author = author;
+        this.post = post;
+        this.content = content;
+
+        var creationTime = Timestamp.from(Instant.now());
+        this.createdAt = creationTime;
+        this.modifiedAt = creationTime;
+    }
 }

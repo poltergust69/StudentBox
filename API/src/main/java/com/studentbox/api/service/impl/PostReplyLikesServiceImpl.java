@@ -1,6 +1,8 @@
 package com.studentbox.api.service.impl;
 
 import com.studentbox.api.entities.forum.PostReply;
+import com.studentbox.api.entities.forum.PostReplyLike;
+import com.studentbox.api.entities.user.User;
 import com.studentbox.api.repository.PostReplyLikeRepository;
 import com.studentbox.api.service.PostReplyLikesService;
 import lombok.AllArgsConstructor;
@@ -31,5 +33,18 @@ public class PostReplyLikesServiceImpl implements PostReplyLikesService {
         });
 
         return repliesLikes;
+    }
+
+    @Override
+    public void toggleLikeForReply(PostReply postReply, User user) {
+        var replyLike = postReplyLikeRepository.findPostReplyLikeByUserAndReply(user, postReply);
+
+        if(replyLike.isPresent()){
+            postReplyLikeRepository.delete(replyLike.get());
+        }
+        else{
+            PostReplyLike postReplyLike = new PostReplyLike(user, postReply);
+            postReplyLikeRepository.save(postReplyLike);
+        }
     }
 }

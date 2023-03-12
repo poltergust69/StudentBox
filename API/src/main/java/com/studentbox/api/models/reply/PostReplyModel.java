@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public class PostReplyModel {
-    public String content;
-    public UserModel author;
-    public Integer likes;
+    private String content;
+    private UserModel author;
+    private Integer likes;
 
     public PostReplyModel(PostReply reply, Integer likes){
         this.content = reply.getContent();
