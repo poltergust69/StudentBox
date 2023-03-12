@@ -36,16 +36,16 @@ public class PostRepliesServiceImpl implements PostRepliesService {
     private final PostReplyLikesService postReplyLikesService;
 
     @Override
-    public Map<UUID, List<PostReplyModel>> getRepliesForPosts(List<Post> posts) {
+    public Map<UUID, List<PostReplyModel>> getRepliesForPosts(User user, List<Post> posts) {
         Map<UUID, List<PostReplyModel>> repliesForPosts = new HashMap<>();
 
-        posts.forEach(post -> repliesForPosts.put(post.getId(), getRepliesForPost(post, Boolean.FALSE)));
+        posts.forEach(post -> repliesForPosts.put(post.getId(), getRepliesForPost(user, post, Boolean.FALSE)));
 
         return repliesForPosts;
     }
 
     @Override
-    public List<PostReplyModel> getRepliesForPost(Post post, Boolean findAll) {
+    public List<PostReplyModel> getRepliesForPost(User user, Post post, Boolean findAll) {
         List<PostReply> replies;
 
         if(Boolean.TRUE.equals(findAll)){
@@ -56,7 +56,8 @@ public class PostRepliesServiceImpl implements PostRepliesService {
             replies = postReplyRepository.getPostRepliesByPostOrderByModifiedAtDesc(post);
         }
         var repliesLikesForPost = postReplyLikesService.getLikesForReplies(replies);
-        return PostReplyMapper.mapAllToModel(replies, repliesLikesForPost);
+        var repliesLikedByUser = postReplyLikesService.getRepliesLikedByUser(user, replies);
+        return PostReplyMapper.mapAllToModel(replies, repliesLikesForPost, repliesLikedByUser);
     }
 
     @Override

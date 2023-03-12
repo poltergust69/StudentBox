@@ -10,13 +10,20 @@ import java.util.UUID;
 import static com.studentbox.api.utils.containers.ConstantsContainer.DEFAULT_LIKES_COUNT;
 
 public class PostReplyMapper {
-    public static List<PostReplyModel> mapAllToModel(List<PostReply> replies, Map<UUID, Integer> repliesLikes){
+    public static List<PostReplyModel> mapAllToModel(
+            List<PostReply> replies,
+            Map<UUID, Integer> repliesLikes,
+            Map<UUID, Boolean> repliesLikedByUser){
         return replies.stream().map(
-                reply -> mapToModel(reply, repliesLikes.getOrDefault(reply.getId(), DEFAULT_LIKES_COUNT))
+                reply -> mapToModel(
+                            reply,
+                            repliesLikes.getOrDefault(reply.getId(), DEFAULT_LIKES_COUNT),
+                            repliesLikedByUser.getOrDefault(reply.getId(), Boolean.FALSE)
+                        )
         ).toList();
     }
 
-    public static PostReplyModel mapToModel(PostReply reply, Integer likes){
-        return new PostReplyModel(reply, likes);
+    public static PostReplyModel mapToModel(PostReply reply, Integer likes, Boolean likedByUser){
+        return new PostReplyModel(reply, likes, likedByUser);
     }
 }

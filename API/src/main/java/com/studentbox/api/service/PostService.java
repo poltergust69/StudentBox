@@ -1,6 +1,7 @@
 package com.studentbox.api.service;
 
 import com.studentbox.api.entities.forum.Post;
+import com.studentbox.api.entities.user.User;
 import com.studentbox.api.models.common.PaginationModel;
 import com.studentbox.api.models.post.PostCreationModel;
 import com.studentbox.api.models.post.PostModel;

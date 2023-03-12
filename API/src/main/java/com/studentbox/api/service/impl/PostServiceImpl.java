@@ -15,6 +15,7 @@ import com.studentbox.api.service.PostLikesService;
 import com.studentbox.api.service.PostRepliesService;
 import com.studentbox.api.service.PostService;
 import com.studentbox.api.service.UserService;
+import com.studentbox.api.utils.containers.SharedMethodContainer;
 import com.studentbox.api.utils.mappers.PostMapper;
 import com.studentbox.api.utils.validators.PostValidator;
 import lombok.AllArgsConstructor;
@@ -22,13 +23,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.studentbox.api.utils.containers.ConstantsContainer.POSTS_DEFAULT_SORT_BY;
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.POST_NOT_FOUND_EXCEPTION_MESSAGE;
+import static com.studentbox.api.utils.containers.SharedMethodContainer.isUserAuthenticated;
 
 @Service
 @AllArgsConstructor
@@ -42,12 +46,16 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostModel> getPage(PaginationModel paginationModel) {
+        boolean isAuthenticated = isUserAuthenticated();
+        User user = isAuthenticated ? userService.findAuthenticatedUser() : null;
+
         Pageable pageable = PageRequest.of(paginationModel.getPageIndex(), paginationModel.getPageSize(), POSTS_DEFAULT_SORT_BY);
         var posts = postRepository.findAll(pageable);
         var postLikes = postLikesService.getLikesForPosts(posts.toList());
-        var postReplies = postRepliesService.getRepliesForPosts(posts.toList());
+        var postReplies = postRepliesService.getRepliesForPosts(user, posts.toList());
+        var postsLikesByUser = postLikesService.getIfPostsLikedByCurrentUser(user, posts.toList());
 
-        return PostMapper.mapAllToModel(posts.toList(), postLikes, postReplies);
+        return PostMapper.mapAllToModel(posts.toList(), postLikes, postReplies, postsLikesByUser);
     }
 
     @Override
@@ -77,10 +85,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostModel findBasicById(String id) {
+        boolean isAuthenticated = isUserAuthenticated();
+        User user = isAuthenticated ? userService.findAuthenticatedUser() : null;
+
         var post = findById(id);
         var postLikes = postLikesService.getLikesForPost(post);
-        var postReplies = postRepliesService.getRepliesForPost(post, Boolean.TRUE);
-        return PostMapper.mapToModel(post, postLikes, postReplies);
+        var postReplies = postRepliesService.getRepliesForPost(user, post, Boolean.TRUE);
+        var postLikedByUser = postLikesService.getIfLikedByCurrentUser(user, post);
+
+        return PostMapper.mapToModel(post, postLikes, postReplies, postLikedByUser);
     }
 
     @Override
