@@ -9,6 +9,7 @@ import com.studentbox.api.models.reply.PostReplyModel;
 import com.studentbox.api.repository.PostReplyRepository;
 import com.studentbox.api.service.PostRepliesService;
 import com.studentbox.api.service.PostReplyLikesService;
+import com.studentbox.api.utils.containers.ConstantsContainer;
 import com.studentbox.api.utils.mappers.PostReplyMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -45,10 +46,17 @@ public class PostRepliesServiceImpl implements PostRepliesService {
 
     @Override
     public List<PostReplyModel> getRepliesForPost(Post post, Boolean findAll) {
-        Pageable pageable = Boolean.TRUE.equals(findAll) ? Pageable.unpaged() : PageRequest.of(DEFAULT_PAGE_INDEX, REPLIES_DEFAULT_PAGE_SIZE);
-        var repliesForPost = postReplyRepository.getPostRepliesByPost(post, pageable);
-        var repliesLikesForPost = postReplyLikesService.getLikesForReplies(repliesForPost.toList());
-        return PostReplyMapper.mapAllToModel(repliesForPost.toList(), repliesLikesForPost);
+        List<PostReply> replies;
+
+        if(Boolean.TRUE.equals(findAll)){
+            Pageable pageable = PageRequest.of(DEFAULT_PAGE_INDEX, REPLIES_DEFAULT_PAGE_SIZE, ConstantsContainer.POSTS_DEFAULT_SORT_BY);
+            replies = postReplyRepository.getPostRepliesByPost(post, pageable).toList();
+        }
+        else{
+            replies = postReplyRepository.getPostRepliesByPostOrderByModifiedAtDesc(post);
+        }
+        var repliesLikesForPost = postReplyLikesService.getLikesForReplies(replies);
+        return PostReplyMapper.mapAllToModel(replies, repliesLikesForPost);
     }
 
     @Override
