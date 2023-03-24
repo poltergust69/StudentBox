@@ -1,11 +1,8 @@
 package com.studentbox.api.service.impl;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studentbox.api.common.CustomAuthentication;
-import com.studentbox.api.config.SecurityConfig;
+import com.studentbox.api.entities.company.Company;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.entities.user.enums.RoleType;
 import com.studentbox.api.exception.NotAuthenticatedException;
@@ -13,28 +10,24 @@ import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.models.auth.AuthRefreshRequestModel;
 import com.studentbox.api.models.auth.AuthRequestModel;
 import com.studentbox.api.models.auth.AuthResponseModel;
+import com.studentbox.api.models.company.RegisterCompanyDetails;
 import com.studentbox.api.models.user.RegisterUserDetails;
-import com.studentbox.api.models.user.UserDetailsModel;
 import com.studentbox.api.repository.UserRepository;
 import com.studentbox.api.service.AuthService;
 import com.studentbox.api.service.RoleService;
 import com.studentbox.api.service.UserService;
-import com.studentbox.api.utils.containers.ConstantsContainer;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
 import java.util.UUID;
 
-import static com.studentbox.api.utils.containers.ConstantsContainer.ACCESS_TOKEN_VALID_FOR_MILLISECONDS;
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.USER_NOT_FOUND_EXCEPTION_MESSAGE;
 import static com.studentbox.api.utils.containers.LoggerMessageContainer.ADMIN_USER_ADDED_MESSAGE;
 import static com.studentbox.api.utils.containers.LoggerMessageContainer.ADMIN_USER_NOT_ADDED_MESSAGE;
+import static com.studentbox.api.utils.validators.CompanyDetailsValidator.validateCompanyDetails;
 import static com.studentbox.api.utils.validators.UserDetailsValidator.validateUserDetails;
 
 @Service
@@ -81,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void registerUser(RegisterUserDetails details, RoleType roleType) {
+    public User registerUser(RegisterUserDetails details, RoleType roleType) {
         validateUserDetails(details);
 
         User user = new User();
@@ -94,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(authService.encodePassword(details.getPassword()));
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     @Override
@@ -121,6 +114,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findAuthenticatedUser() {
         CustomAuthentication authentication = CustomAuthentication.getAuthentication();
-        return userRepository.findUserByUsername((String) authentication.getPrincipal()).orElseThrow(() -> new NotAuthenticatedException());
+        return userRepository.findUserByUsername((String) authentication.getPrincipal()).orElseThrow(NotAuthenticatedException::new);
     }
+
 }

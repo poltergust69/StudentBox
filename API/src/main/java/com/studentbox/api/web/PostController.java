@@ -23,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PostController {
     private final PostService postService;
+
     @GetMapping
     @ApiOperation(value="Get a page of posts.", response = PostModel[].class)
     public ResponseEntity<List<PostModel>> getPageOfPosts(

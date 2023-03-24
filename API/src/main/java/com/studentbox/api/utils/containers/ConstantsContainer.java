@@ -20,4 +20,5 @@ public class ConstantsContainer {
     public static final Integer POST_TITLE_MAX_LENGTH = 100;
     public static final String PLACEHOLDER_AVATAR_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png";
     public static final String ROLE_PREFIX = "ROLE_";
+    public static final Integer JOB_POSITION_NAME_MAX_LENGTH = 100;
 }

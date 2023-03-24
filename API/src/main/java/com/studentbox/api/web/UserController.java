@@ -1,9 +1,12 @@
 package com.studentbox.api.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.studentbox.api.entities.user.enums.RoleType;
 import com.studentbox.api.models.auth.AuthRequestModel;
 import com.studentbox.api.models.auth.AuthResponseModel;
+import com.studentbox.api.models.company.RegisterCompanyDetails;
 import com.studentbox.api.models.role.RoleModel;
+import com.studentbox.api.models.user.RegisterUserDetails;
 import com.studentbox.api.service.RoleService;
 import com.studentbox.api.service.UserService;
 import io.swagger.annotations.ApiOperation;
