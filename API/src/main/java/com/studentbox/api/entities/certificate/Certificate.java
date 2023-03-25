@@ -18,7 +18,7 @@ public class Certificate {
     @Id
     private UUID id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
 

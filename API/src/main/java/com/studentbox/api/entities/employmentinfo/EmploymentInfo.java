@@ -22,7 +22,7 @@ public class EmploymentInfo {
     @Id
     private UUID id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
 
@@ -30,7 +30,7 @@ public class EmploymentInfo {
 
     private String companyName;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "position_id")
     private JobPosition jobPosition;
 
