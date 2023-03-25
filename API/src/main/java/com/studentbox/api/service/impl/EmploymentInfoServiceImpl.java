@@ -1,17 +1,15 @@
 package com.studentbox.api.service.impl;
 
 import com.studentbox.api.entities.company.Company;
-import com.studentbox.api.entities.employmentInfo.EmploymentInfo;
+import com.studentbox.api.entities.employmentinfo.EmploymentInfo;
 import com.studentbox.api.entities.jobposition.JobPosition;
 import com.studentbox.api.entities.student.Student;
-import com.studentbox.api.exception.NotAuthenticatedException;
 import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.models.employment.EmploymentInfoCreationModel;
 import com.studentbox.api.repository.EmploymentInfoRepository;
 import com.studentbox.api.service.CompanyService;
 import com.studentbox.api.service.EmploymentInfoService;
 import com.studentbox.api.service.JobPositionService;
-import com.studentbox.api.service.StudentService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +24,10 @@ import static com.studentbox.api.utils.containers.ExceptionMessageContainer.EMPL
 public class EmploymentInfoServiceImpl implements EmploymentInfoService {
 
     private final EmploymentInfoRepository employmentInfoRepository;
-    private final StudentService studentService;
     private final JobPositionService jobPositionService;
     private final CompanyService companyService;
 
-    private final static Logger logger = LoggerFactory.getLogger(EmploymentInfoServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(EmploymentInfoServiceImpl.class);
 
     @Override
     public EmploymentInfo findById(String id) {
@@ -38,8 +35,7 @@ public class EmploymentInfoServiceImpl implements EmploymentInfoService {
     }
 
     @Override
-    public void addEmploymentInfoToStudent(EmploymentInfoCreationModel employmentInfoCreationModel) {
-        Student student = studentService.findLoggedInStudent().orElseThrow(NotAuthenticatedException::new);
+    public void addEmploymentInfoToStudent(Student student, EmploymentInfoCreationModel employmentInfoCreationModel) {
         JobPosition jobPosition = jobPositionService.findByName(employmentInfoCreationModel.getJobPosition());
         Company company = companyService.findByName(employmentInfoCreationModel.getCompanyName());
 

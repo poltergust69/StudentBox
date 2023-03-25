@@ -5,10 +5,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studentbox.api.config.SecurityConfig;
+import com.studentbox.api.entities.company.Company;
+import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.exception.NotAuthenticatedException;
 import com.studentbox.api.models.auth.AuthRequestModel;
 import com.studentbox.api.models.auth.AuthResponseModel;
+import com.studentbox.api.models.company.CompanyDetailsModel;
+import com.studentbox.api.models.student.StudentDetailsModel;
 import com.studentbox.api.models.user.UserDetailsModel;
 import com.studentbox.api.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -38,8 +42,46 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public AuthResponseModel login(User user, Company company, AuthRequestModel requestModel) throws JsonProcessingException {
+        if(!passwordEncoder.matches(requestModel.getPassword(), user.getPassword())){
+            throw new NotAuthenticatedException();
+        }
+
+        String accessToken = generateAccessToken(company);
+        String refreshToken = generateRefreshToken(user);
+
+        return new AuthResponseModel(accessToken, refreshToken);
+    }
+
+    @Override
+    public AuthResponseModel login(User user, Student student, AuthRequestModel requestModel) throws JsonProcessingException {
+        if(!passwordEncoder.matches(requestModel.getPassword(), user.getPassword())){
+            throw new NotAuthenticatedException();
+        }
+
+        String accessToken = generateAccessToken(student);
+        String refreshToken = generateRefreshToken(user);
+
+        return new AuthResponseModel(accessToken, refreshToken);
+    }
+
+    @Override
     public AuthResponseModel refreshToken(User user, String refreshToken) throws JsonProcessingException {
         String accessToken = generateAccessToken(user);
+
+        return new AuthResponseModel(accessToken, refreshToken);
+    }
+
+    @Override
+    public AuthResponseModel refreshToken(Company company, String refreshToken) throws JsonProcessingException {
+        String accessToken = generateAccessToken(company);
+
+        return new AuthResponseModel(accessToken, refreshToken);
+    }
+
+    @Override
+    public AuthResponseModel refreshToken(Student student, String refreshToken) throws JsonProcessingException {
+        String accessToken = generateAccessToken(student);
 
         return new AuthResponseModel(accessToken, refreshToken);
     }
@@ -52,6 +94,20 @@ public class AuthServiceImpl implements AuthService {
     private String generateAccessToken(User user) throws JsonProcessingException {
         return JWT.create()
                 .withSubject(new ObjectMapper().writeValueAsString(new UserDetailsModel(user)))
+                .withExpiresAt(new Date(System.currentTimeMillis()+ ACCESS_TOKEN_VALID_FOR_MILLISECONDS))
+                .sign(Algorithm.HMAC256(securityConfig.getJwtSecretKey()));
+    }
+
+    private String generateAccessToken(Company company) throws JsonProcessingException {
+        return JWT.create()
+                .withSubject(new ObjectMapper().writeValueAsString(new CompanyDetailsModel(company)))
+                .withExpiresAt(new Date(System.currentTimeMillis()+ ACCESS_TOKEN_VALID_FOR_MILLISECONDS))
+                .sign(Algorithm.HMAC256(securityConfig.getJwtSecretKey()));
+    }
+
+    private String generateAccessToken(Student student) throws JsonProcessingException {
+        return JWT.create()
+                .withSubject(new ObjectMapper().writeValueAsString(new StudentDetailsModel(student)))
                 .withExpiresAt(new Date(System.currentTimeMillis()+ ACCESS_TOKEN_VALID_FOR_MILLISECONDS))
                 .sign(Algorithm.HMAC256(securityConfig.getJwtSecretKey()));
     }

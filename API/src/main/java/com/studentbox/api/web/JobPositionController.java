@@ -29,7 +29,7 @@ public class JobPositionController{
 
     @PostMapping
     @ApiOperation(value="Create a new job position.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity createJobPosition(
             JobPositionCreationModel jobPositionCreationModel
     ){
@@ -44,7 +44,7 @@ public class JobPositionController{
 
     @DeleteMapping("/{positionId}")
     @ApiOperation(value="Delete a job position.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity deleteJobPosition(
             @PathVariable String positionId
     ){

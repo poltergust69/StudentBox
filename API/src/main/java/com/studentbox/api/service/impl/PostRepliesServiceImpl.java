@@ -5,27 +5,16 @@ import com.studentbox.api.entities.forum.PostReply;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.models.reply.PostReplyCreationModel;
-import com.studentbox.api.models.reply.PostReplyModel;
 import com.studentbox.api.repository.PostReplyRepository;
 import com.studentbox.api.service.PostRepliesService;
 import com.studentbox.api.service.PostReplyLikesService;
-import com.studentbox.api.utils.containers.ConstantsContainer;
-import com.studentbox.api.utils.mappers.PostReplyMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import static com.studentbox.api.utils.containers.ConstantsContainer.DEFAULT_PAGE_INDEX;
-import static com.studentbox.api.utils.containers.ConstantsContainer.REPLIES_DEFAULT_PAGE_SIZE;
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.POST_REPLY_NOT_FOUND_EXCEPTION_MESSAGE;
 import static com.studentbox.api.utils.validators.PostValidator.validatePostReply;
 
@@ -34,30 +23,6 @@ import static com.studentbox.api.utils.validators.PostValidator.validatePostRepl
 public class PostRepliesServiceImpl implements PostRepliesService {
     private final PostReplyRepository postReplyRepository;
     private final PostReplyLikesService postReplyLikesService;
-
-    @Override
-    public Map<UUID, List<PostReplyModel>> getRepliesForPosts(List<Post> posts) {
-        Map<UUID, List<PostReplyModel>> repliesForPosts = new HashMap<>();
-
-        posts.forEach(post -> repliesForPosts.put(post.getId(), getRepliesForPost(post, Boolean.FALSE)));
-
-        return repliesForPosts;
-    }
-
-    @Override
-    public List<PostReplyModel> getRepliesForPost(Post post, Boolean findAll) {
-        List<PostReply> replies;
-
-        if(Boolean.TRUE.equals(findAll)){
-            Pageable pageable = PageRequest.of(DEFAULT_PAGE_INDEX, REPLIES_DEFAULT_PAGE_SIZE, ConstantsContainer.POSTS_DEFAULT_SORT_BY);
-            replies = postReplyRepository.getPostRepliesByPost(post, pageable).toList();
-        }
-        else{
-            replies = postReplyRepository.getPostRepliesByPostOrderByModifiedAtDesc(post);
-        }
-        var repliesLikesForPost = postReplyLikesService.getLikesForReplies(replies);
-        return PostReplyMapper.mapAllToModel(replies, repliesLikesForPost);
-    }
 
     @Override
     public PostReply findById(String id) {

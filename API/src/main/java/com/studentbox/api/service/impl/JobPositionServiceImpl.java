@@ -27,7 +27,7 @@ public class JobPositionServiceImpl implements JobPositionService {
 
     private final JobPositionRepository jobPositionRepository;
 
-    private final static Logger logger = LoggerFactory.getLogger(JobPositionServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(JobPositionServiceImpl.class);
 
     @Override
     public List<JobPositionModel> getPage(PaginationModel paginationModel) {

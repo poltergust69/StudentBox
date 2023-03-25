@@ -8,6 +8,6 @@ import java.util.List;
 public interface StudentSkillService {
 
     List<StudentSkill> findAllByStudent(Student student);
-    void addSkillToStudent(String skillId);
-    void deleteStudentSkill(String skillId);
+    void addSkillToStudent(Student student, String skillId);
+    void deleteStudentSkill(Student student, String skillId);
 }

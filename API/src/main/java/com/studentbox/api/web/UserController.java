@@ -1,21 +1,16 @@
 package com.studentbox.api.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.studentbox.api.entities.user.enums.RoleType;
 import com.studentbox.api.models.auth.AuthRequestModel;
 import com.studentbox.api.models.auth.AuthResponseModel;
-import com.studentbox.api.models.company.RegisterCompanyDetails;
 import com.studentbox.api.models.role.RoleModel;
-import com.studentbox.api.models.user.RegisterUserDetails;
+import com.studentbox.api.models.sendgrid.ResetPasswordModel;
 import com.studentbox.api.service.RoleService;
 import com.studentbox.api.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,8 +29,30 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseModel> login(
-        AuthRequestModel authRequestModel
+            AuthRequestModel authRequestModel
     ) throws JsonProcessingException {
         return ResponseEntity.ok(userService.login(authRequestModel));
+    }
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthResponseModel> refreshToken(
+            @RequestParam String refreshToken
+    ) throws JsonProcessingException {
+        return ResponseEntity.ok(userService.refreshToken(refreshToken));
+    }
+
+    @PutMapping("/forgot-password")
+    public ResponseEntity requestForgotPassword(
+            @RequestParam String email
+    ){
+        userService.requestForgotPasswordCode(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity requestForgotPassword(
+            ResetPasswordModel resetPasswordModel
+    ){
+        userService.resetPassword(resetPasswordModel);
+        return ResponseEntity.ok().build();
     }
 }

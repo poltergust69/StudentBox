@@ -1,6 +1,5 @@
 package com.studentbox.api.web;
 
-import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.models.certificate.CertificateCreationModel;
 import com.studentbox.api.models.certificate.CertificateModel;
 import com.studentbox.api.models.education.EducationCreationModel;
@@ -25,17 +24,16 @@ public class StudentController {
     private final StudentService studentService;
 
     @GetMapping("/skills")
-    @ApiOperation(value="Get a list of skills of the user.", response = SkillModel[].class)
-    @PreAuthorize("isAuthenticated()")
+    @ApiOperation(value="Get a list of skills of the student.", response = SkillModel[].class)
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<List<SkillModel>> getSkills(
-            Student student
     ){
-        return ResponseEntity.ok(studentService.getSkillsForStudent(student));
+        return ResponseEntity.ok(studentService.getSkillsForStudent());
     }
 
     @PostMapping("/skills/{skillId}")
     @ApiOperation(value="Add a new skill to the user.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity addSkill(
             @PathVariable String skillId
     ){
@@ -50,7 +48,7 @@ public class StudentController {
 
     @ApiOperation(value="Delete a student skill.")
     @DeleteMapping("/skills/{skillId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity deleteStudentSkill(
             @PathVariable String skillId
     ){
@@ -60,14 +58,14 @@ public class StudentController {
 
     @GetMapping("/education")
     @ApiOperation(value="Get a list of logged-in user's education info.", response = EducationInfo[].class)
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<List<EducationInfo>> getEducationInfo(){
         return ResponseEntity.ok(studentService.getEducationInfo());
     }
 
     @PostMapping("/education")
     @ApiOperation(value="Add a new item to logged-in user's education.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity addEducation(
         EducationCreationModel educationCreationModel
     ){
@@ -82,7 +80,7 @@ public class StudentController {
 
     @PatchMapping("/education/{educationId}")
     @ApiOperation(value="Modify a student education.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity editStudentEducation(
             @PathVariable String educationId,
             EducationModificationModel educationModificationModel
@@ -93,7 +91,7 @@ public class StudentController {
 
     @ApiOperation(value="Delete a student education.")
     @DeleteMapping("/education/{educationId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity deleteStudentEducation(
             @PathVariable String educationId
     ){
@@ -103,14 +101,14 @@ public class StudentController {
 
     @GetMapping("/certificates")
     @ApiOperation(value="Get a list of logged-in user's skill certificates.", response = CertificateModel[].class)
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<List<CertificateModel>> getSkillCertificates(){
         return ResponseEntity.ok(studentService.getCertificates());
     }
 
     @PostMapping("/certificates")
     @ApiOperation(value="Add a new certificate to logged-in user skill certificates.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity addSkillCertificate(
             CertificateCreationModel certificateCreationModel
     ){
@@ -125,7 +123,7 @@ public class StudentController {
 
     @ApiOperation(value="Delete a skill certificate.")
     @DeleteMapping("/certificates/{certificateId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity deleteSkillCertificate(
             @PathVariable String certificateId
     ){
@@ -133,9 +131,9 @@ public class StudentController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/employmentinfo")
+    @PostMapping("/employment-info")
     @ApiOperation(value="Add a new employment info to logged-in user.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity addEmploymentInfo(
             EmploymentInfoCreationModel employmentInfoCreationModel
     ){
@@ -149,8 +147,8 @@ public class StudentController {
     }
 
     @ApiOperation(value="Delete employment info.")
-    @DeleteMapping("/employmentinfo/{certificateId}")
-    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/employment-info/{certificateId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity deleteEmploymentInfo(
             @PathVariable String certificateId
     ){

@@ -7,6 +7,9 @@ import static com.studentbox.api.utils.containers.ExceptionMessageContainer.*;
 import static java.util.Objects.isNull;
 
 public class JobOfferValidator {
+    private JobOfferValidator() {
+        throw new IllegalStateException(UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE);
+    }
 
     public static void validateJobOffer(JobOfferCreationModel jobOfferCreationModel){
         if(!isDescriptionValid(jobOfferCreationModel.getDescription())){

@@ -6,7 +6,6 @@ import com.studentbox.api.models.post.PostModel;
 import com.studentbox.api.models.post.PostModificationModel;
 import com.studentbox.api.models.reply.PostReplyCreationModel;
 import com.studentbox.api.models.reply.PostReplyModificationModel;
-import com.studentbox.api.models.role.RoleModel;
 import com.studentbox.api.service.PostService;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 

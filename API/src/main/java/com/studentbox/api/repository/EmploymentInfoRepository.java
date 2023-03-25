@@ -1,6 +1,6 @@
 package com.studentbox.api.repository;
 
-import com.studentbox.api.entities.employmentInfo.EmploymentInfo;
+import com.studentbox.api.entities.employmentinfo.EmploymentInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

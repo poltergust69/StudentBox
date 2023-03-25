@@ -3,18 +3,24 @@ package com.studentbox.api.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.studentbox.api.common.CustomAuthentication;
 import com.studentbox.api.entities.company.Company;
+import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.entities.user.enums.RoleType;
+import com.studentbox.api.entities.user.forgotpassword.ForgotPasswordRequest;
 import com.studentbox.api.exception.NotAuthenticatedException;
 import com.studentbox.api.exception.NotFoundException;
-import com.studentbox.api.models.auth.AuthRefreshRequestModel;
+import com.studentbox.api.exception.NotValidException;
 import com.studentbox.api.models.auth.AuthRequestModel;
 import com.studentbox.api.models.auth.AuthResponseModel;
-import com.studentbox.api.models.company.RegisterCompanyDetails;
+import com.studentbox.api.models.sendgrid.ResetPasswordModel;
 import com.studentbox.api.models.user.RegisterUserDetails;
+import com.studentbox.api.repository.CompanyRepository;
+import com.studentbox.api.repository.ForgotPasswordRequestRepository;
+import com.studentbox.api.repository.StudentRepository;
 import com.studentbox.api.repository.UserRepository;
 import com.studentbox.api.service.AuthService;
 import com.studentbox.api.service.RoleService;
+import com.studentbox.api.service.SendGridService;
 import com.studentbox.api.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,26 +28,36 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.studentbox.api.utils.containers.ExceptionMessageContainer.USER_NOT_FOUND_EXCEPTION_MESSAGE;
+import static com.studentbox.api.utils.containers.ConstantsContainer.COMPANY_ROLE;
+import static com.studentbox.api.utils.containers.ConstantsContainer.STUDENT_ROLE;
+import static com.studentbox.api.utils.containers.ExceptionMessageContainer.*;
 import static com.studentbox.api.utils.containers.LoggerMessageContainer.ADMIN_USER_ADDED_MESSAGE;
 import static com.studentbox.api.utils.containers.LoggerMessageContainer.ADMIN_USER_NOT_ADDED_MESSAGE;
-import static com.studentbox.api.utils.validators.CompanyDetailsValidator.validateCompanyDetails;
 import static com.studentbox.api.utils.validators.UserDetailsValidator.validateUserDetails;
+import static com.studentbox.api.utils.validators.UserDetailsValidator.validateUserPassword;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final CompanyRepository companyRepository;
     private final AuthService authService;
     private final RoleService roleService;
+    private final SendGridService sendGridService;
+    private final ForgotPasswordRequestRepository forgotPasswordRequestRepository;
+    private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-
-    public UserServiceImpl(UserRepository userRepository, AuthService authService, RoleService roleService) {
+    public UserServiceImpl(UserRepository userRepository, StudentRepository studentRepository, CompanyRepository companyRepository, AuthService authService, RoleService roleService, SendGridService sendGridService, ForgotPasswordRequestRepository forgotPasswordRequestRepository) {
         this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
+        this.companyRepository = companyRepository;
         this.authService = authService;
         this.roleService = roleService;
+        this.sendGridService = sendGridService;
+        this.forgotPasswordRequestRepository = forgotPasswordRequestRepository;
     }
 
     @Value("${initialuser.username}")
@@ -97,18 +113,42 @@ public class UserServiceImpl implements UserService {
                 authRequestModel.getUser()
         ).orElseThrow(NotAuthenticatedException::new);
 
-        return authService.login(user, authRequestModel);
+        if(user.getRole().getAuthority().equals(STUDENT_ROLE)){
+            Student student = studentRepository.findById(user.getId()).orElseThrow(
+                    () -> new NotFoundException(String.format(STUDENT_NOT_FOUND_EXCEPTION_MESSAGE, user.getUsername()))
+            );
+            return authService.login(user, student, authRequestModel);
+        }
+        else if(user.getRole().getAuthority().equals(COMPANY_ROLE)){
+            Company company = companyRepository.findById(user.getId()).orElseThrow(
+                    () -> new NotFoundException(String.format(COMPANY_NOT_FOUND_EXCEPTION_MESSAGE, user.getUsername()))
+            );
+            return authService.login(user, company, authRequestModel);
+        }
+        else{
+            return authService.login(user, authRequestModel);
+        }
     }
 
-
     @Override
-    public AuthResponseModel refreshToken(AuthRefreshRequestModel authRefreshRequestModel) throws JsonProcessingException {
-        User user = userRepository.findUserByUsernameOrEmail(
-                authRefreshRequestModel.getUser(),
-                authRefreshRequestModel.getPassword()
-        ).orElseThrow(NotAuthenticatedException::new);
+    public AuthResponseModel refreshToken(String refreshToken) throws JsonProcessingException {
+        User user = findAuthenticatedUser();
 
-        return authService.refreshToken(user, authRefreshRequestModel.getRefreshToken());
+        if(user.getRole().getAuthority().equals(STUDENT_ROLE)){
+            Student student = studentRepository.findById(user.getId()).orElseThrow(
+                    () -> new NotFoundException(String.format(STUDENT_NOT_FOUND_EXCEPTION_MESSAGE, user.getUsername()))
+            );
+            return authService.refreshToken(student, refreshToken);
+        }
+        else if(user.getRole().getAuthority().equals(COMPANY_ROLE)){
+            Company company = companyRepository.findById(user.getId()).orElseThrow(
+                    () -> new NotFoundException(String.format(COMPANY_NOT_FOUND_EXCEPTION_MESSAGE, user.getUsername()))
+            );
+            return authService.refreshToken(company, refreshToken);
+        }
+        else{
+            return authService.refreshToken(user, refreshToken);
+        }
     }
 
     @Override
@@ -117,4 +157,44 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUserByUsername((String) authentication.getPrincipal()).orElseThrow(NotAuthenticatedException::new);
     }
 
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_EMAIL_EXCEPTION_MESSAGE, email)));
+    }
+
+    @Override
+    public void requestForgotPasswordCode(String email) {
+        User user = findByEmail(email);
+
+        forgotPasswordRequestRepository.deleteById(user.getId());
+        ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest(user);
+        forgotPasswordRequestRepository.save(forgotPasswordRequest);
+
+        sendGridService.sendForgotPasswordEmail(email, user.getUsername(), forgotPasswordRequest.getSecret());
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordModel resetPasswordModel) {
+        User user = findByEmail(resetPasswordModel.getEmail());
+
+        ForgotPasswordRequest request = forgotPasswordRequestRepository.findByUser(user).orElseThrow(
+                () -> new NotValidException(SECRET_KEY_RESET_NOT_VALID_EXCEPTION_MESSAGE));
+
+        LocalDateTime expiresAt = request.getCreatedAt().toLocalDateTime().plusHours(1L);
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        if(!request.getSecret().equals(resetPasswordModel.getSecretKey())
+            || currentTime.isAfter(expiresAt)){
+            throw new NotValidException(SECRET_KEY_RESET_NOT_VALID_EXCEPTION_MESSAGE);
+        }
+
+        validateUserPassword(resetPasswordModel.getPassword());
+
+        String newPassword = authService.encodePassword(resetPasswordModel.getPassword());
+        user.setPassword(newPassword);
+
+        userRepository.save(user);
+        forgotPasswordRequestRepository.delete(request);
+    }
 }

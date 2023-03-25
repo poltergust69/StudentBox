@@ -1,6 +1,5 @@
 package com.studentbox.api.service.impl;
 
-import com.studentbox.api.common.CustomAuthentication;
 import com.studentbox.api.entities.forum.Post;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.exception.NotFoundException;
@@ -27,7 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
-import static com.studentbox.api.utils.containers.ConstantsContainer.POSTS_DEFAULT_SORT_BY;
+import static com.studentbox.api.utils.containers.ConstantsContainer.*;
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.POST_NOT_FOUND_EXCEPTION_MESSAGE;
 
 @Service
@@ -37,17 +36,14 @@ public class PostServiceImpl implements PostService {
     private final PostLikesService postLikesService;
     private final PostRepliesService postRepliesService;
     private final UserService userService;
-
-    private final static Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
 
     @Override
     public List<PostModel> getPage(PaginationModel paginationModel) {
         Pageable pageable = PageRequest.of(paginationModel.getPageIndex(), paginationModel.getPageSize(), POSTS_DEFAULT_SORT_BY);
         var posts = postRepository.findAll(pageable);
-        var postLikes = postLikesService.getLikesForPosts(posts.toList());
-        var postReplies = postRepliesService.getRepliesForPosts(posts.toList());
 
-        return PostMapper.mapAllToModel(posts.toList(), postLikes, postReplies);
+        return PostMapper.mapAllToModel(posts.toList(), LIMITED_VIEW_ENABLED);
     }
 
     @Override
@@ -78,9 +74,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostModel findBasicById(String id) {
         var post = findById(id);
-        var postLikes = postLikesService.getLikesForPost(post);
-        var postReplies = postRepliesService.getRepliesForPost(post, Boolean.TRUE);
-        return PostMapper.mapToModel(post, postLikes, postReplies);
+        return PostMapper.mapToModel(post, LIMITED_VIEW_DISABLED);
     }
 
     @Override

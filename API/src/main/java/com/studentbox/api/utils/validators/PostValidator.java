@@ -9,6 +9,10 @@ import static com.studentbox.api.utils.containers.ExceptionMessageContainer.*;
 import static java.util.Objects.isNull;
 
 public class PostValidator {
+    private PostValidator() {
+        throw new IllegalStateException(UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE);
+    }
+
     public static void validatePost(PostCreationModel postCreationModel){
         if(!isTitleValid(postCreationModel.getTitle())){
             throw new NotValidException(NOT_VALID_POST_TITLE_EXCEPTION_MESSAGE);

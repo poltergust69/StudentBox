@@ -2,13 +2,11 @@ package com.studentbox.api.service.impl;
 
 import com.studentbox.api.entities.certificate.Certificate;
 import com.studentbox.api.entities.student.Student;
-import com.studentbox.api.exception.NotAuthenticatedException;
 import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.models.certificate.CertificateCreationModel;
 import com.studentbox.api.models.certificate.CertificateModel;
 import com.studentbox.api.repository.CertificateRepository;
 import com.studentbox.api.service.CertificateService;
-import com.studentbox.api.service.StudentService;
 import com.studentbox.api.utils.mappers.CertificateMapper;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -25,9 +23,8 @@ import static com.studentbox.api.utils.containers.ExceptionMessageContainer.SKIL
 public class CertificateServiceImpl implements CertificateService {
 
     private final CertificateRepository certificateRepository;
-    private final StudentService studentService;
 
-    private final static Logger logger = LoggerFactory.getLogger(CertificateServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(CertificateServiceImpl.class);
 
     @Override
     public Certificate findById(String id) {
@@ -35,18 +32,14 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<CertificateModel> getCertificates() {
-        Student student = studentService.findLoggedInStudent().orElseThrow(NotAuthenticatedException::new);
-
+    public List<CertificateModel> getCertificates(Student student) {
         List<Certificate> certificates = certificateRepository.findAllByStudent(student);
 
         return CertificateMapper.mapAllToModel(certificates);
     }
 
     @Override
-    public void addCertificateToStudent(CertificateCreationModel certificateCreationModel) {
-        Student student = studentService.findLoggedInStudent().orElseThrow(NotAuthenticatedException::new);
-
+    public void addCertificateToStudent(Student student, CertificateCreationModel certificateCreationModel) {
         Certificate certificate = new Certificate(certificateCreationModel, student);
 
         try{

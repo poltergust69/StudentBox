@@ -3,11 +3,9 @@ package com.studentbox.api.service.impl;
 import com.studentbox.api.entities.skill.Skill;
 import com.studentbox.api.entities.skill.StudentSkill;
 import com.studentbox.api.entities.student.Student;
-import com.studentbox.api.exception.NotAuthenticatedException;
 import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.repository.SkillRepository;
 import com.studentbox.api.repository.StudentSkillRepository;
-import com.studentbox.api.service.StudentService;
 import com.studentbox.api.service.StudentSkillService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -18,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.SKILL_NOT_FOUND_EXCEPTION_MESSAGE;
+import static com.studentbox.api.utils.containers.ExceptionMessageContainer.STUDENT_HAS_NO_SKILL_EXCEPTION_MESSAGE;
 
 @Service
 @AllArgsConstructor
@@ -25,9 +24,8 @@ public class StudentSkillServiceImpl implements StudentSkillService {
 
     private final StudentSkillRepository studentSkillRepository;
     private final SkillRepository skillRepository;
-    private final StudentService studentService;
 
-    private final static Logger logger = LoggerFactory.getLogger(StudentSkillServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(StudentSkillServiceImpl.class);
 
     @Override
     public List<StudentSkill> findAllByStudent(Student student){
@@ -35,9 +33,8 @@ public class StudentSkillServiceImpl implements StudentSkillService {
     }
 
     @Override
-    public void addSkillToStudent(String skillId) {
+    public void addSkillToStudent(Student student, String skillId) {
         Skill skill = skillRepository.findById(UUID.fromString(skillId)).orElseThrow(() -> new NotFoundException(String.format(SKILL_NOT_FOUND_EXCEPTION_MESSAGE, skillId)));
-        Student student = studentService.findLoggedInStudent().orElseThrow(NotAuthenticatedException::new);
 
         StudentSkill studentSkill = new StudentSkill(skill, student);
 
@@ -51,11 +48,12 @@ public class StudentSkillServiceImpl implements StudentSkillService {
     }
 
     @Override
-    public void deleteStudentSkill(String skillId) {
-        Skill skill = skillRepository.findById(UUID.fromString(skillId)).orElseThrow(() -> new NotFoundException(String.format(SKILL_NOT_FOUND_EXCEPTION_MESSAGE, skillId)));
-        Student student = studentService.findLoggedInStudent().orElseThrow(NotAuthenticatedException::new);
-
-        StudentSkill studentSkill = new StudentSkill(skill, student);
+    public void deleteStudentSkill(Student student, String skillId) {
+        UUID skillUUID = UUID.fromString(skillId);
+        Skill skill = skillRepository.findById(skillUUID)
+                .orElseThrow(() -> new NotFoundException(String.format(SKILL_NOT_FOUND_EXCEPTION_MESSAGE, skillId)));
+        StudentSkill studentSkill = studentSkillRepository.findByStudentAndSkill(student, skill)
+                .orElseThrow(() -> new NotFoundException(String.format(STUDENT_HAS_NO_SKILL_EXCEPTION_MESSAGE, student.getFullName(), skill.getName())));
 
         studentSkillRepository.delete(studentSkill);
     }

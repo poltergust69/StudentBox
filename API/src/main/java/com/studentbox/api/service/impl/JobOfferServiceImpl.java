@@ -26,7 +26,7 @@ public class JobOfferServiceImpl implements JobOfferService {
 
     JobOfferRepository jobOfferRepository;
 
-    private final static Logger logger = LoggerFactory.getLogger(JobOfferServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(JobOfferServiceImpl.class);
 
     @Override
     public List<JobOfferModel> getPage(PaginationModel paginationModel, String companyId) {

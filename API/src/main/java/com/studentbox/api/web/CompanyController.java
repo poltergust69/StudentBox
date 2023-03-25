@@ -30,7 +30,7 @@ public class CompanyController {
 
     @GetMapping("/job-posts")
     @ApiOperation(value="Get a page of the logged-in company's job offer posts", response = JobOfferModel[].class)
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_COMPANY')")
     public ResponseEntity<List<JobOfferModel>> getPageOfOffers(
             PaginationModel paginationModel
     ){
@@ -40,7 +40,7 @@ public class CompanyController {
 
     @PostMapping("/job-posts")
     @ApiOperation(value="Create a new job offer.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_COMPANY')")
     public ResponseEntity createPost(
             JobOfferCreationModel jobOfferCreationModel
     ){
@@ -55,7 +55,7 @@ public class CompanyController {
 
     @DeleteMapping("/job-posts/{id}")
     @ApiOperation(value="Delete a job offer.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_COMPANY')")
     public ResponseEntity deletePost(
             @PathVariable String id
     ){
@@ -63,14 +63,8 @@ public class CompanyController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponseModel> login(
-            AuthRequestModel authRequestModel
-    ) throws JsonProcessingException {
-        return ResponseEntity.ok(userService.login(authRequestModel));
-    }
-
     @PostMapping("/register")
+    @PreAuthorize("isAnonymous()")
     public ResponseEntity register(
             RegisterCompanyDetails registerCompanyDetails
     ) {

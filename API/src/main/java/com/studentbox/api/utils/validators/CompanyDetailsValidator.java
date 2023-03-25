@@ -2,7 +2,6 @@ package com.studentbox.api.utils.validators;
 
 import com.studentbox.api.exception.NotValidException;
 import com.studentbox.api.models.company.RegisterCompanyDetails;
-import com.studentbox.api.models.user.RegisterUserDetails;
 
 import java.util.regex.Matcher;
 
@@ -12,6 +11,9 @@ import static com.studentbox.api.utils.containers.ExceptionMessageContainer.NOT_
 import static java.util.Objects.isNull;
 
 public class CompanyDetailsValidator {
+    private CompanyDetailsValidator(){
+        throw new IllegalStateException(UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE);
+    }
 
     public static void validateCompanyDetails(RegisterCompanyDetails companyDetails){
         if(isUsernameSymbolsInvalid(companyDetails.getUsername())){

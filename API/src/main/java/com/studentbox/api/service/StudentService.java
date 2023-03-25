@@ -10,12 +10,10 @@ import com.studentbox.api.models.employment.EmploymentInfoCreationModel;
 import com.studentbox.api.models.skill.SkillModel;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface StudentService {
-
-    Optional<Student> findLoggedInStudent();
-    List<SkillModel> getSkillsForStudent(Student student);
+    Student findLoggedInStudent();
+    List<SkillModel> getSkillsForStudent();
     void addSkillToStudent(String skillId);
     void deleteStudentSkill(String skillId);
     List<EducationInfo> getEducationInfo();

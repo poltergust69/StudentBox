@@ -1,4 +1,4 @@
-package com.studentbox.api.entities.employmentInfo;
+package com.studentbox.api.entities.employmentinfo;
 
 import com.studentbox.api.entities.company.Company;
 import com.studentbox.api.entities.jobposition.JobPosition;

@@ -4,6 +4,7 @@ import com.studentbox.api.entities.skill.Skill;
 import com.studentbox.api.entities.skill.StudentSkill;
 import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.entities.user.User;
+import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.models.certificate.CertificateCreationModel;
 import com.studentbox.api.models.certificate.CertificateModel;
 import com.studentbox.api.models.education.EducationCreationModel;
@@ -15,13 +16,12 @@ import com.studentbox.api.repository.StudentRepository;
 import com.studentbox.api.service.*;
 import com.studentbox.api.utils.mappers.SkillMapper;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import static com.studentbox.api.utils.containers.ExceptionMessageContainer.STUDENT_NOT_FOUND_EXCEPTION_MESSAGE;
 
 @Service
 @AllArgsConstructor
@@ -34,17 +34,16 @@ public class StudentServiceImpl implements StudentService {
     private final CertificateService certificateService;
     private final EmploymentInfoService employmentInfoService;
 
-    private final static Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
-
     @Override
-    public Optional<Student> findLoggedInStudent() {
+    public Student findLoggedInStudent() {
         User user = userService.findAuthenticatedUser();
-        return studentRepository.findById(user.getId());
+        return studentRepository.findById(user.getId()).orElseThrow(
+                () -> new NotFoundException(String.format(STUDENT_NOT_FOUND_EXCEPTION_MESSAGE, user.getUsername())));
     }
 
     @Override
-    public List<SkillModel> getSkillsForStudent(Student student) {
-
+    public List<SkillModel> getSkillsForStudent() {
+        Student student = findLoggedInStudent();
         List<Skill> skills = new ArrayList<>();
         List<StudentSkill> studentSkills = studentSkillService.findAllByStudent(student);
 
@@ -55,22 +54,26 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void addSkillToStudent(String skillId) {
-        studentSkillService.addSkillToStudent(skillId);
+        Student student = findLoggedInStudent();
+        studentSkillService.addSkillToStudent(student, skillId);
     }
 
     @Override
     public void deleteStudentSkill(String skillId) {
-        studentSkillService.deleteStudentSkill(skillId);
+        Student student = findLoggedInStudent();
+        studentSkillService.deleteStudentSkill(student, skillId);
     }
 
     @Override
     public List<EducationInfo> getEducationInfo() {
-        return educationService.getEducationInfo();
+        Student student = findLoggedInStudent();
+        return educationService.getEducationInfo(student);
     }
 
     @Override
     public void addEducationToStudent(EducationCreationModel educationCreationModel) {
-        educationService.addEducationToStudent(educationCreationModel);
+        Student student = findLoggedInStudent();
+        educationService.addEducationToStudent(student, educationCreationModel);
     }
 
     @Override
@@ -85,12 +88,14 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<CertificateModel> getCertificates() {
-        return certificateService.getCertificates();
+        Student student = findLoggedInStudent();
+        return certificateService.getCertificates(student);
     }
 
     @Override
     public void addCertificateToStudent(CertificateCreationModel certificateCreationModel) {
-        certificateService.addCertificateToStudent(certificateCreationModel);
+        Student student = findLoggedInStudent();
+        certificateService.addCertificateToStudent(student, certificateCreationModel);
     }
 
     @Override
@@ -100,7 +105,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void addEmploymentInfoToStudent(EmploymentInfoCreationModel employmentInfoCreationModel) {
-        employmentInfoService.addEmploymentInfoToStudent(employmentInfoCreationModel);
+        Student student = findLoggedInStudent();
+        employmentInfoService.addEmploymentInfoToStudent(student, employmentInfoCreationModel);
     }
 
     @Override

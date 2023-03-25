@@ -8,6 +8,10 @@ import static com.studentbox.api.utils.containers.ExceptionMessageContainer.*;
 import static java.util.Objects.isNull;
 
 public class JobPositionValidator {
+    private JobPositionValidator() {
+        throw new IllegalStateException(UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE);
+    }
+
     public static void validateJobPosition(JobPositionCreationModel jobPositionCreationModel){
         if(!isNameValid(jobPositionCreationModel.getName())){
             throw new NotValidException(NOT_VALID_JOB_POSITION_NAME_EXCEPTION_MESSAGE);
