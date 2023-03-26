@@ -7,6 +7,7 @@ import com.studentbox.api.models.common.PaginationModel;
 import com.studentbox.api.models.post.PostCreationModel;
 import com.studentbox.api.models.post.PostModel;
 import com.studentbox.api.models.post.PostModificationModel;
+
 import com.studentbox.api.models.post.reply.PostReplyCreationModel;
 import com.studentbox.api.models.post.reply.PostReplyModificationModel;
 import com.studentbox.api.repository.forum.PostRepository;
@@ -14,6 +15,9 @@ import com.studentbox.api.service.forum.PostLikesService;
 import com.studentbox.api.service.forum.PostRepliesService;
 import com.studentbox.api.service.forum.PostService;
 import com.studentbox.api.service.user.UserService;
+
+import com.studentbox.api.utils.containers.SharedMethodContainer;
+
 import com.studentbox.api.utils.mappers.PostMapper;
 import com.studentbox.api.utils.validators.PostValidator;
 import lombok.AllArgsConstructor;
@@ -21,9 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.studentbox.api.utils.containers.ConstantsContainer.*;
@@ -40,6 +46,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostModel> getPage(PaginationModel paginationModel) {
+        boolean isAuthenticated = isUserAuthenticated();
+        User user = isAuthenticated ? userService.findAuthenticatedUser() : null;
+
         Pageable pageable = PageRequest.of(paginationModel.getPageIndex(), paginationModel.getPageSize(), POSTS_DEFAULT_SORT_BY);
         var posts = postRepository.findAll(pageable);
 
@@ -54,13 +63,7 @@ public class PostServiceImpl implements PostService {
         User author = userService.findAuthenticatedUser();
         Post post = new Post(postCreationModel, author);
 
-        try{
-            postRepository.save(post);
-        }
-        catch (Exception e){
-            logger.error(e.getMessage());
-            throw e;
-        }
+        postRepository.save(post);
     }
 
     @Override
@@ -73,6 +76,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostModel findBasicById(String id) {
+        boolean isAuthenticated = isUserAuthenticated();
+        User user = isAuthenticated ? userService.findAuthenticatedUser() : null;
+
         var post = findById(id);
         return PostMapper.mapToModel(post, LIMITED_VIEW_DISABLED);
     }

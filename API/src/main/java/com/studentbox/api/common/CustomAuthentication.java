@@ -69,4 +69,15 @@ public class CustomAuthentication implements Authentication {
     public static CustomAuthentication getAuthentication() {
         return (CustomAuthentication) SecurityContextHolder.getContext().getAuthentication();
     }
+
+    @Override
+    public String toString() {
+        return "CustomAuthentication{" +
+                "userRole=" + userRole +
+                ", credentials=" + credentials +
+                ", details=" + details +
+                ", principal=" + principal +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

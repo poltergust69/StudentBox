@@ -22,4 +22,8 @@ public class SharedMethodContainer {
 
         return builder.toString();
     }
+
+    public static boolean isUserAuthenticated(){
+        return SecurityContextHolder.getContext().getAuthentication() instanceof CustomAuthentication;
+    }
 }

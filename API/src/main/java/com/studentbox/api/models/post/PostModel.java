@@ -5,7 +5,10 @@ import com.studentbox.api.models.post.reply.PostReplyModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,18 +18,20 @@ public class PostModel {
     private UUID id;
     private String title;
     private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private Timestamp createdAt;
+    private Timestamp modifiedAt;
     private Integer likes;
+    private boolean likedByCurrentUser;
     private List<PostReplyModel> replies;
 
-    public PostModel(Post post, Integer likes, List<PostReplyModel> replies) {
+    public PostModel(Post post, Integer likes, List<PostReplyModel> replies, boolean likedByCurrentUser) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.createdAt = post.getCreatedAt().toLocalDateTime();
-        this.modifiedAt = post.getModifiedAt().toLocalDateTime();
+        this.createdAt = post.getCreatedAt();
+        this.modifiedAt = post.getModifiedAt();
         this.likes = likes;
         this.replies = replies;
+        this.likedByCurrentUser = likedByCurrentUser;
     }
 }

@@ -25,6 +25,31 @@ public class PostRepliesServiceImpl implements PostRepliesService {
     private final PostReplyLikesService postReplyLikesService;
 
     @Override
+    public Map<UUID, List<PostReplyModel>> getRepliesForPosts(User user, List<Post> posts) {
+        Map<UUID, List<PostReplyModel>> repliesForPosts = new HashMap<>();
+
+        posts.forEach(post -> repliesForPosts.put(post.getId(), getRepliesForPost(user, post, Boolean.FALSE)));
+
+        return repliesForPosts;
+    }
+
+    @Override
+    public List<PostReplyModel> getRepliesForPost(User user, Post post, Boolean findAll) {
+        List<PostReply> replies;
+
+        if(Boolean.TRUE.equals(findAll)){
+            Pageable pageable = PageRequest.of(DEFAULT_PAGE_INDEX, REPLIES_DEFAULT_PAGE_SIZE, ConstantsContainer.POSTS_DEFAULT_SORT_BY);
+            replies = postReplyRepository.getPostRepliesByPost(post, pageable).toList();
+        }
+        else{
+            replies = postReplyRepository.getPostRepliesByPostOrderByModifiedAtDesc(post);
+        }
+        var repliesLikesForPost = postReplyLikesService.getLikesForReplies(replies);
+        var repliesLikedByUser = postReplyLikesService.getRepliesLikedByUser(user, replies);
+        return PostReplyMapper.mapAllToModel(replies, repliesLikesForPost, repliesLikedByUser);
+    }
+
+    @Override
     public PostReply findById(String id) {
         UUID replyId = UUID.fromString(id);
 

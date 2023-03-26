@@ -8,6 +8,13 @@ import com.studentbox.api.service.forum.PostReplyLikesService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static java.util.Objects.isNull;
+
 @Service
 @AllArgsConstructor
 public class PostReplyLikesServiceImpl implements PostReplyLikesService {
@@ -24,5 +31,23 @@ public class PostReplyLikesServiceImpl implements PostReplyLikesService {
             PostReplyLike postReplyLike = new PostReplyLike(user, postReply);
             postReplyLikeRepository.save(postReplyLike);
         }
+    }
+
+    @Override
+    public Map<UUID, Boolean> getRepliesLikedByUser(User user, List<PostReply> replies) {
+        Map<UUID, Boolean> likedByUser = new HashMap<>();
+
+        replies.forEach(reply -> likedByUser.put(reply.getId(), getReplyLikedByUser(user, reply)));
+
+        return likedByUser;
+    }
+
+    @Override
+    public boolean getReplyLikedByUser(User user, PostReply reply) {
+        if(isNull(user)){
+            return false;
+        }
+
+        return postReplyLikeRepository.findPostReplyLikeByUserAndReply(user, reply).isPresent();
     }
 }
