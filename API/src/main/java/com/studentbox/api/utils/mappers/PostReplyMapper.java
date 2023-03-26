@@ -1,29 +1,23 @@
 package com.studentbox.api.utils.mappers;
 
 import com.studentbox.api.entities.forum.PostReply;
-import com.studentbox.api.models.reply.PostReplyModel;
+import com.studentbox.api.models.post.reply.PostReplyModel;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
-import static com.studentbox.api.utils.containers.ConstantsContainer.DEFAULT_LIKES_COUNT;
+import static com.studentbox.api.utils.containers.ExceptionMessageContainer.UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE;
 
 public class PostReplyMapper {
-    public static List<PostReplyModel> mapAllToModel(
-            List<PostReply> replies,
-            Map<UUID, Integer> repliesLikes,
-            Map<UUID, Boolean> repliesLikedByUser){
-        return replies.stream().map(
-                reply -> mapToModel(
-                            reply,
-                            repliesLikes.getOrDefault(reply.getId(), DEFAULT_LIKES_COUNT),
-                            repliesLikedByUser.getOrDefault(reply.getId(), Boolean.FALSE)
-                        )
-        ).toList();
+    private PostReplyMapper() {
+        throw new IllegalStateException(UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE);
     }
 
-    public static PostReplyModel mapToModel(PostReply reply, Integer likes, Boolean likedByUser){
-        return new PostReplyModel(reply, likes, likedByUser);
+    public static List<PostReplyModel> mapAllToModel(List<PostReply> replies){
+        return replies.stream().map(PostReplyMapper::mapToModel)
+                .toList();
+    }
+
+    public static PostReplyModel mapToModel(PostReply reply){
+        return new PostReplyModel(reply, reply.getLikes().size());
     }
 }
