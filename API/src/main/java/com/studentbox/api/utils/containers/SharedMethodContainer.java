@@ -1,5 +1,8 @@
 package com.studentbox.api.utils.containers;
 
+import com.studentbox.api.common.CustomAuthentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import static com.studentbox.api.utils.containers.ConstantsContainer.ALL_CHARACTERS;
 import static com.studentbox.api.utils.containers.ConstantsContainer.RANDOM_GENERATOR;
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE;
