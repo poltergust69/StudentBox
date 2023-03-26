@@ -1,15 +1,17 @@
 package com.studentbox.api.web;
 
-import com.studentbox.api.models.certificate.CertificateCreationModel;
-import com.studentbox.api.models.certificate.CertificateModel;
-import com.studentbox.api.models.education.EducationCreationModel;
-import com.studentbox.api.models.education.EducationInfo;
-import com.studentbox.api.models.education.EducationModificationModel;
-import com.studentbox.api.models.employment.EmploymentInfoCreationModel;
-import com.studentbox.api.models.skill.SkillModel;
-import com.studentbox.api.service.StudentService;
+import com.studentbox.api.common.PermissionEvaluator;
+import com.studentbox.api.models.student.certificate.CertificateCreationModel;
+import com.studentbox.api.models.student.certificate.CertificateModel;
+import com.studentbox.api.models.student.education.EducationCreationModel;
+import com.studentbox.api.models.student.education.EducationInfo;
+import com.studentbox.api.models.student.education.EducationModificationModel;
+import com.studentbox.api.models.student.employment.EmploymentInfoCreationModel;
+import com.studentbox.api.models.student.skill.SkillModel;
+import com.studentbox.api.service.student.StudentService;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -37,23 +39,19 @@ public class StudentController {
     public ResponseEntity addSkill(
             @PathVariable String skillId
     ){
-        try{
-            studentService.addSkillToStudent(skillId);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok().build();
+        studentService.addSkillToStudent(skillId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @ApiOperation(value="Delete a student skill.")
     @DeleteMapping("/skills/{skillId}")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @PreAuthorize("hasRole('ROLE_STUDENT') && @permissionEvaluator.hasPermissionToAlterStudentSkill(principal, #skillId)")
     public ResponseEntity deleteStudentSkill(
-            @PathVariable String skillId
+            @PathVariable String skillId,
+            PermissionEvaluator permissionEvaluator
     ){
         studentService.deleteStudentSkill(skillId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/education")
@@ -69,34 +67,29 @@ public class StudentController {
     public ResponseEntity addEducation(
         EducationCreationModel educationCreationModel
     ){
-        try{
-            studentService.addEducationToStudent(educationCreationModel);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok().build();
+        studentService.addEducationToStudent(educationCreationModel);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PatchMapping("/education/{educationId}")
     @ApiOperation(value="Modify a student education.")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @PreAuthorize("hasRole('ROLE_STUDENT') && @permissionEvaluator.hasPermissionToAlterStudentEducation(principal, #educationId)")
     public ResponseEntity editStudentEducation(
             @PathVariable String educationId,
             EducationModificationModel educationModificationModel
     ){
         studentService.editStudentEducation(educationId, educationModificationModel);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @ApiOperation(value="Delete a student education.")
     @DeleteMapping("/education/{educationId}")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @PreAuthorize("hasRole('ROLE_STUDENT') && @permissionEvaluator.hasPermissionToAlterStudentEducation(principal, #educationId)")
     public ResponseEntity deleteStudentEducation(
             @PathVariable String educationId
     ){
         studentService.deleteStudentEducation(educationId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @GetMapping("/certificates")
@@ -112,23 +105,19 @@ public class StudentController {
     public ResponseEntity addSkillCertificate(
             CertificateCreationModel certificateCreationModel
     ){
-        try{
-            studentService.addCertificateToStudent(certificateCreationModel);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok().build();
+        studentService.addCertificateToStudent(certificateCreationModel);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @ApiOperation(value="Delete a skill certificate.")
     @DeleteMapping("/certificates/{certificateId}")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @PreAuthorize("hasRole('ROLE_STUDENT') && @permissionEvaluator.hasPermissionToAlterStudentCertificate(principal, #certificateId)")
     public ResponseEntity deleteSkillCertificate(
-            @PathVariable String certificateId
+            @PathVariable String certificateId,
+            PermissionEvaluator permissionEvaluator
     ){
         studentService.deleteCertificate(certificateId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/employment-info")
@@ -137,23 +126,19 @@ public class StudentController {
     public ResponseEntity addEmploymentInfo(
             EmploymentInfoCreationModel employmentInfoCreationModel
     ){
-        try{
-            studentService.addEmploymentInfoToStudent(employmentInfoCreationModel);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok().build();
+        studentService.addEmploymentInfoToStudent(employmentInfoCreationModel);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @ApiOperation(value="Delete employment info.")
-    @DeleteMapping("/employment-info/{certificateId}")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @DeleteMapping("/employment-info/{employmentId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') && @permissionEvaluator.hasPermissionToAlterEmploymentInfo(principal, #employmentId)")
     public ResponseEntity deleteEmploymentInfo(
-            @PathVariable String certificateId
+            @PathVariable String employmentId,
+            PermissionEvaluator permissionEvaluator
     ){
-        studentService.deleteEmploymentInfo(certificateId);
-        return ResponseEntity.ok().build();
+        studentService.deleteEmploymentInfo(employmentId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

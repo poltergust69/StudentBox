@@ -1,7 +1,7 @@
 package com.studentbox.api.utils.mappers;
 
 import com.studentbox.api.entities.forum.PostReply;
-import com.studentbox.api.models.reply.PostReplyModel;
+import com.studentbox.api.models.post.reply.PostReplyModel;
 
 import java.util.List;
 

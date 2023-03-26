@@ -1,8 +1,10 @@
 package com.studentbox.api.entities.student;
 
-import com.studentbox.api.entities.certificate.Certificate;
-import com.studentbox.api.entities.employmentinfo.EmploymentInfo;
-import com.studentbox.api.entities.skill.Skill;
+import com.studentbox.api.entities.student.certificate.Certificate;
+import com.studentbox.api.entities.student.education.Education;
+import com.studentbox.api.entities.student.education.StudentEducation;
+import com.studentbox.api.entities.student.employment.EmploymentInfo;
+import com.studentbox.api.entities.student.skill.Skill;
 import com.studentbox.api.entities.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,10 +41,13 @@ public class Student {
     @OneToMany
     List<EmploymentInfo> employments;
 
+    @OneToMany
+    List<StudentEducation> educations;
+
     @ManyToMany
     @JoinTable(name="student_skills",
-        joinColumns = @JoinColumn(name="student_id"),
-        inverseJoinColumns = @JoinColumn(name="skill_id"))
+            joinColumns = @JoinColumn(name="student_id"),
+            inverseJoinColumns = @JoinColumn(name="skill_id"))
     List<Skill> skills;
 
     public String getFullName(){

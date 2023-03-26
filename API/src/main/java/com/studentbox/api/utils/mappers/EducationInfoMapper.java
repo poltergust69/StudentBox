@@ -1,7 +1,7 @@
 package com.studentbox.api.utils.mappers;
 
-import com.studentbox.api.entities.education.StudentEducation;
-import com.studentbox.api.models.education.EducationInfo;
+import com.studentbox.api.entities.student.education.StudentEducation;
+import com.studentbox.api.models.student.education.EducationInfo;
 
 import java.util.List;
 

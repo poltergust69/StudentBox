@@ -1,7 +1,7 @@
 package com.studentbox.api.utils.mappers;
 
-import com.studentbox.api.entities.skill.Skill;
-import com.studentbox.api.models.skill.SkillModel;
+import com.studentbox.api.entities.student.skill.Skill;
+import com.studentbox.api.models.student.skill.SkillModel;
 
 import java.util.List;
 

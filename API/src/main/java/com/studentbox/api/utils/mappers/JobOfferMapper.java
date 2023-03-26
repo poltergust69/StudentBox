@@ -1,7 +1,7 @@
 package com.studentbox.api.utils.mappers;
 
-import com.studentbox.api.entities.company.JobOffer;
-import com.studentbox.api.models.joboffer.JobOfferModel;
+import com.studentbox.api.entities.company.job.JobOffer;
+import com.studentbox.api.models.company.joboffer.JobOfferModel;
 
 import java.util.List;
 

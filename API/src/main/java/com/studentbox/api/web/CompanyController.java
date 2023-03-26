@@ -1,18 +1,15 @@
 package com.studentbox.api.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.studentbox.api.entities.user.User;
-import com.studentbox.api.models.auth.AuthRequestModel;
-import com.studentbox.api.models.auth.AuthResponseModel;
+import com.studentbox.api.common.PermissionEvaluator;
 import com.studentbox.api.models.common.PaginationModel;
 import com.studentbox.api.models.company.RegisterCompanyDetails;
-import com.studentbox.api.models.joboffer.JobOfferCreationModel;
-import com.studentbox.api.models.joboffer.JobOfferModel;
-import com.studentbox.api.service.CompanyService;
-import com.studentbox.api.service.JobOfferService;
-import com.studentbox.api.service.UserService;
+import com.studentbox.api.models.company.joboffer.JobOfferCreationModel;
+import com.studentbox.api.models.company.joboffer.JobOfferModel;
+import com.studentbox.api.service.company.CompanyService;
+import com.studentbox.api.service.company.JobOfferService;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +22,6 @@ import java.util.List;
 public class CompanyController {
 
     JobOfferService jobOfferService;
-    UserService userService;
     CompanyService companyService;
 
     @GetMapping("/job-posts")
@@ -34,8 +30,7 @@ public class CompanyController {
     public ResponseEntity<List<JobOfferModel>> getPageOfOffers(
             PaginationModel paginationModel
     ){
-        User company = userService.findAuthenticatedUser();
-        return ResponseEntity.ok(jobOfferService.getPage(paginationModel, company.getId().toString()));
+        return ResponseEntity.ok(jobOfferService.getPage(paginationModel));
     }
 
     @PostMapping("/job-posts")
@@ -44,23 +39,19 @@ public class CompanyController {
     public ResponseEntity createPost(
             JobOfferCreationModel jobOfferCreationModel
     ){
-        try{
-            jobOfferService.create(jobOfferCreationModel);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok().build();
+        jobOfferService.create(jobOfferCreationModel);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/job-posts/{id}")
     @ApiOperation(value="Delete a job offer.")
-    @PreAuthorize("hasRole('ROLE_COMPANY')")
+    @PreAuthorize("hasRole('ROLE_COMPANY') && @permissionEvaluator.hasPermissionToAlterJobOffer(principal, #id)")
     public ResponseEntity deletePost(
-            @PathVariable String id
+            @PathVariable String id,
+            PermissionEvaluator permissionEvaluator
     ){
         jobOfferService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/register")
@@ -69,6 +60,6 @@ public class CompanyController {
             RegisterCompanyDetails registerCompanyDetails
     ) {
         companyService.registerCompany(registerCompanyDetails);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

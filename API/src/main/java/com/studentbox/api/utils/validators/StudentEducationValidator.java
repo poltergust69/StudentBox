@@ -1,7 +1,7 @@
 package com.studentbox.api.utils.validators;
 
 import com.studentbox.api.exception.NotValidException;
-import com.studentbox.api.models.education.EducationCreationModel;
+import com.studentbox.api.models.student.education.EducationCreationModel;
 
 import java.time.LocalDate;
 

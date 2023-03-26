@@ -1,7 +1,7 @@
 package com.studentbox.api.utils.validators;
 
 import com.studentbox.api.exception.NotValidException;
-import com.studentbox.api.models.joboffer.JobOfferCreationModel;
+import com.studentbox.api.models.company.joboffer.JobOfferCreationModel;
 
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.*;
 import static java.util.Objects.isNull;

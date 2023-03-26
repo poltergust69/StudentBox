@@ -1,7 +1,7 @@
 package com.studentbox.api.utils.mappers;
 
-import com.studentbox.api.entities.certificate.Certificate;
-import com.studentbox.api.models.certificate.CertificateModel;
+import com.studentbox.api.entities.student.certificate.Certificate;
+import com.studentbox.api.models.student.certificate.CertificateModel;
 
 import java.util.List;
 
