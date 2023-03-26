@@ -1,12 +1,10 @@
 package com.studentbox.api.models.post;
 
 import com.studentbox.api.entities.forum.Post;
-import com.studentbox.api.entities.forum.PostReply;
-import com.studentbox.api.models.reply.PostReplyModel;
+import com.studentbox.api.models.post.reply.PostReplyModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

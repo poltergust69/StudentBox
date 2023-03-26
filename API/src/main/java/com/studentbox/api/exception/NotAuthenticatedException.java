@@ -1,7 +1,6 @@
 package com.studentbox.api.exception;
 
 
-import com.studentbox.api.utils.containers.ExceptionMessageContainer;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 

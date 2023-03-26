@@ -1,16 +1,17 @@
 package com.studentbox.api.utils.validators;
 
 import com.studentbox.api.exception.NotValidException;
-import com.studentbox.api.models.education.EducationCreationModel;
-import com.studentbox.api.models.post.PostCreationModel;
+import com.studentbox.api.models.student.education.EducationCreationModel;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.*;
 import static java.util.Objects.isNull;
 
 public class StudentEducationValidator {
+    private StudentEducationValidator() {
+        throw new IllegalStateException(UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE);
+    }
 
     public static void validateStudentEducation(EducationCreationModel educationCreationModel) {
         if(!isSchoolNameValid(educationCreationModel.getSchoolName())){
@@ -28,17 +29,11 @@ public class StudentEducationValidator {
 
         if(startDate == null)
             return false;
-
-        if (startDate.isAfter(endDate))
+        else if (startDate.isAfter(endDate))
             return false;
-
-        if (startDate.isAfter(LocalDate.now()))
+        else if (startDate.isAfter(LocalDate.now()))
             return false;
-
-        if (endDate.isAfter(LocalDate.now()))
-            return false;
-
-        return true;
+        else return !endDate.isAfter(LocalDate.now());
     }
 
     private static boolean isDescriptionValid(String description){

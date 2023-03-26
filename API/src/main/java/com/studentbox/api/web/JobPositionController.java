@@ -3,7 +3,7 @@ package com.studentbox.api.web;
 import com.studentbox.api.models.common.PaginationModel;
 import com.studentbox.api.models.jobposition.JobPositionCreationModel;
 import com.studentbox.api.models.jobposition.JobPositionModel;
-import com.studentbox.api.service.JobPositionService;
+import com.studentbox.api.service.jobposition.JobPositionService;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,22 +29,17 @@ public class JobPositionController{
 
     @PostMapping
     @ApiOperation(value="Create a new job position.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity createJobPosition(
             JobPositionCreationModel jobPositionCreationModel
     ){
-        try{
-            jobPositionService.create(jobPositionCreationModel);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+        jobPositionService.create(jobPositionCreationModel);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{positionId}")
     @ApiOperation(value="Delete a job position.")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity deleteJobPosition(
             @PathVariable String positionId
     ){

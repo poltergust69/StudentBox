@@ -2,9 +2,15 @@ package com.studentbox.api.utils.containers;
 
 import org.springframework.data.domain.Sort;
 
+import java.util.Random;
 import java.util.regex.Pattern;
 
+import static com.studentbox.api.utils.containers.ExceptionMessageContainer.UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE;
+
 public class ConstantsContainer {
+    private ConstantsContainer(){
+        throw new IllegalStateException(UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE);
+    }
     public static final Integer DEFAULT_PAGE_SIZE = 10;
     public static final Integer DEFAULT_PAGE_INDEX = 0;
     public static final Sort POSTS_DEFAULT_SORT_BY = Sort.by("modifiedAt").descending();
@@ -21,4 +27,11 @@ public class ConstantsContainer {
     public static final String PLACEHOLDER_AVATAR_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png";
     public static final String ROLE_PREFIX = "ROLE_";
     public static final Integer JOB_POSITION_NAME_MAX_LENGTH = 100;
+    public static final Boolean LIMITED_VIEW_ENABLED = true;
+    public static final Boolean LIMITED_VIEW_DISABLED = false;
+    public static final Integer REPLY_COUNT_LIMITED = 3;
+    public static final Random RANDOM_GENERATOR = new Random();
+    public static final String ALL_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public static final String STUDENT_ROLE = "ROLE_STUDENT";
+    public static final String COMPANY_ROLE = "ROLE_COMPANY";
 }
