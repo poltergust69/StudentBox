@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import static com.studentbox.api.utils.containers.ConstantsContainer.*;
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.POST_NOT_FOUND_EXCEPTION_MESSAGE;
+import static com.studentbox.api.utils.containers.SharedMethodContainer.isUserAuthenticated;
 
 @Service
 @AllArgsConstructor
@@ -52,7 +53,7 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(paginationModel.getPageIndex(), paginationModel.getPageSize(), POSTS_DEFAULT_SORT_BY);
         var posts = postRepository.findAll(pageable);
 
-        return PostMapper.mapAllToModel(posts.toList(), LIMITED_VIEW_ENABLED);
+        return PostMapper.mapAllToModel(posts.toList(), LIMITED_VIEW_ENABLED, user);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class PostServiceImpl implements PostService {
         User user = isAuthenticated ? userService.findAuthenticatedUser() : null;
 
         var post = findById(id);
-        return PostMapper.mapToModel(post, LIMITED_VIEW_DISABLED);
+        return PostMapper.mapToModel(post, LIMITED_VIEW_DISABLED, user);
     }
 
     @Override
