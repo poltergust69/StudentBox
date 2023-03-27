@@ -4,11 +4,8 @@ import com.studentbox.api.common.PermissionEvaluator;
 import com.studentbox.api.models.common.PaginationModel;
 import com.studentbox.api.models.post.PostCreationModel;
 import com.studentbox.api.models.post.PostModel;
-import com.studentbox.api.models.post.PostModificationModel;
 import com.studentbox.api.models.post.reply.PostReplyCreationModel;
-import com.studentbox.api.models.post.reply.PostReplyModificationModel;
 import com.studentbox.api.service.forum.PostService;
-
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -68,10 +65,10 @@ public class PostRestController {
     @PreAuthorize("isAuthenticated() && @permissionEvaluator.hasPermissionToAlterPost(principal, #postId)")
     public ResponseEntity updatePost(
             @PathVariable String postId,
-            PostModificationModel postModificationModel,
+            PostCreationModel postModel,
             PermissionEvaluator permissionEvaluator
     ){
-        postService.update(postId, postModificationModel);
+        postService.update(postId, postModel);
         return ResponseEntity.ok().build();
     }
 
@@ -102,9 +99,9 @@ public class PostRestController {
     public ResponseEntity updateReplyToPost(
             @PathVariable String postId,
             @PathVariable String replyId,
-            PostReplyModificationModel postReplyModificationModel
+            PostReplyCreationModel postReplyModel
     ){
-        postService.updateReply(postId, replyId, postReplyModificationModel);
+        postService.updateReply(postId, replyId, postReplyModel);
         return ResponseEntity.ok().build();
     }
     @ApiOperation(value="Delete a reply.")

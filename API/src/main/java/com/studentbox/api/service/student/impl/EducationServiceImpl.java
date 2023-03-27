@@ -59,12 +59,12 @@ public class EducationServiceImpl implements EducationService {
     }
 
     @Override
-    public void editStudentEducation(String id, EducationModificationModel educationModificationModel) {
+    public void editStudentEducation(String id, EducationCreationModel educationCreationModel) {
         StudentEducation studentEducation = findById(id);
 
-        StudentEducationValidator.validateStudentEducation(educationModificationModel);
+        StudentEducationValidator.validateStudentEducation(educationCreationModel);
 
-        studentEducation.modifyStudentEducation(educationModificationModel);
+        studentEducation.modifyStudentEducation(educationCreationModel);
 
         studentEducationRepository.save(studentEducation);
     }

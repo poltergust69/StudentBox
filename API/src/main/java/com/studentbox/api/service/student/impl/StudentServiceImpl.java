@@ -1,15 +1,14 @@
 package com.studentbox.api.service.student.impl;
 
+import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.entities.student.skill.Skill;
 import com.studentbox.api.entities.student.skill.StudentSkill;
-import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.models.student.certificate.CertificateCreationModel;
 import com.studentbox.api.models.student.certificate.CertificateModel;
 import com.studentbox.api.models.student.education.EducationCreationModel;
 import com.studentbox.api.models.student.education.EducationInfo;
-import com.studentbox.api.models.student.education.EducationModificationModel;
 import com.studentbox.api.models.student.employment.EmploymentInfoCreationModel;
 import com.studentbox.api.models.student.skill.SkillModel;
 import com.studentbox.api.repository.student.StudentRepository;
@@ -78,8 +77,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void editStudentEducation(String id, EducationModificationModel educationModificationModel) {
-        educationService.editStudentEducation(id, educationModificationModel);
+    public void editStudentEducation(String id, EducationCreationModel educationCreationModel) {
+        educationService.editStudentEducation(id, educationCreationModel);
     }
 
     @Override
