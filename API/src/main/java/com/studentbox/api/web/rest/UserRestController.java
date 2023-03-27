@@ -1,4 +1,4 @@
-package com.studentbox.api.web;
+package com.studentbox.api.web.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.studentbox.api.models.auth.AuthRequestModel;
@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
-public class UserController {
+public class UserRestController {
     private final RoleService roleService;
     private final UserService userService;
 
