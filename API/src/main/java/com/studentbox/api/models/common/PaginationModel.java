@@ -1,6 +1,5 @@
 package com.studentbox.api.models.common;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Objects;

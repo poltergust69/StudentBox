@@ -2,7 +2,6 @@ package com.studentbox.api.utils.validators;
 
 import com.studentbox.api.exception.NotValidException;
 import com.studentbox.api.models.user.RegisterUserDetails;
-import com.studentbox.api.models.user.UserDetailsModel;
 
 import java.util.regex.Matcher;
 
@@ -11,6 +10,9 @@ import static com.studentbox.api.utils.containers.ExceptionMessageContainer.*;
 import static java.util.Objects.isNull;
 
 public class UserDetailsValidator {
+    private UserDetailsValidator(){
+        throw new IllegalStateException(UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE);
+    }
     public static void validateUserDetails(RegisterUserDetails userDetails){
         if(isUsernameSymbolsInvalid(userDetails.getUsername())){
             throw new NotValidException(String.format(NOT_VALID_USERNAME_EXCEPTION_MESSAGE, userDetails.getUsername()));
@@ -26,6 +28,12 @@ public class UserDetailsValidator {
 
         if(isAvatarUrlInvalid(userDetails.getAvatarUrl())){
             throw new NotValidException(NOT_VALID_AVATAR_URL_EXCEPTION_MESSAGE);
+        }
+    }
+
+    public static void validateUserPassword(String password){
+        if(isPasswordInvalid(password)){
+            throw new NotValidException(NOT_VALID_PASSWORD_EXCEPTION_MESSAGE);
         }
     }
 

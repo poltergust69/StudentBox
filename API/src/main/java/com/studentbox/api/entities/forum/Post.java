@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -32,9 +34,20 @@ public class Post {
     @Column(name="modified_at")
     private Timestamp modifiedAt;
 
-    @JoinColumn(name="author_id")
     @ManyToOne
+    @JoinColumn(name="author_id")
     private User author;
+
+    @OneToMany
+    @JoinColumn(name="post_id")
+    @OrderBy("modifiedAt")
+    private List<PostReply> replies;
+
+    @ManyToMany
+    @JoinTable(name = "post_likes",
+            joinColumns = @JoinColumn(name="post_id"),
+            inverseJoinColumns = @JoinColumn(name="user_id"))
+    private List<User> likes;
 
     public Post(PostCreationModel postCreationModel, User author){
         this.id = UUID.randomUUID();
@@ -43,6 +56,8 @@ public class Post {
         this.author = author;
         this.modifiedAt = Timestamp.from(Instant.now());
         this.createdAt = Timestamp.from(Instant.now());
+        this.replies = new LinkedList<>();
+        this.likes = new LinkedList<>();
     }
     public Post(String title, String content, User author) {
         this.id = UUID.randomUUID();
@@ -51,6 +66,8 @@ public class Post {
         this.author = author;
         this.modifiedAt = Timestamp.from(Instant.now());
         this.createdAt = Timestamp.from(Instant.now());
+        this.replies = new LinkedList<>();
+        this.likes = new LinkedList<>();
     }
 
     public void modifyPost(PostModificationModel postModificationModel){
