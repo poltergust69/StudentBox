@@ -1,10 +1,11 @@
 package com.studentbox.api.service.employ;
 
-import com.studentbox.api.entities.company.Company;
-import com.studentbox.api.entities.company.job.JobOffer;
-import com.studentbox.api.entities.student.Student;
+import com.studentbox.api.entities.employ.StudentJobOffer;
+import com.studentbox.api.entities.user.User;
+import com.studentbox.api.models.employ.SortedStudentJobOffer;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.UUID;
 
 public interface EmployService {
 
@@ -18,7 +19,7 @@ public interface EmployService {
       Дополнително, employmentInfo мозе да носе бодови ако била за дадената позиција или позиција со слични вештини.
      */
 
-    List<JobOffer> offers (Student student);
+    Collection<SortedStudentJobOffer> offers (UUID studentId);
 
 
     /*
@@ -29,7 +30,7 @@ public interface EmployService {
      Дополнително, employmentInfo мозе да носе бодови ако била за дадената позиција или позиција со слични вештини.
 
      */
-    List<Student> students (Company company);
+    Collection<SortedStudentJobOffer> students (UUID companyId);
 
 
 
@@ -42,8 +43,12 @@ public interface EmployService {
 
      наместо да се праќаат како параметри, мозе внатре да се извадата согласно кој е најавен.
      */
-    boolean matchJob (Student user, JobOffer jobOffer);
+    boolean swipeRight (User user, UUID studentId, UUID jobOfferId);
 
-    void skipJob (Student user, JobOffer jobOffer);
+    boolean swipeLeft (User user,UUID studentId, UUID jobOfferId);
+
+    Collection<StudentJobOffer> findAllMatched(UUID userId);
+
+
 
 }

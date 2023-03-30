@@ -179,3 +179,26 @@ CREATE TABLE student_dislikes_company(
     constraint fk_studentdislikescompany_student FOREIGN KEY (student_id) references students(id),
     constraint ch_studentdislikescompany_unique UNIQUE (student_id, company_id)
 );
+
+CREATE TABLE required_skills_for(
+   id uuid primary key,
+   skill_id uuid not null,
+   job_id uuid not null,
+   constraint fk_requiredskillsfor_job FOREIGN KEY (skill_id) references skills(id),
+   constraint fk_requiredskillsfor_skill FOREIGN KEY (job_id) references job_offers(id),
+   constraint ch_requiredskillsfor_unique UNIQUE (skill_id,job_id)
+);
+
+CREATE TABLE  match_student_job_offer(
+   id uuid primary key,
+   student_id uuid not null,
+   job_id uuid not null,
+   student_status varchar(1),
+   company_status varchar(1),
+   score double precision,
+   constraint  fk_matchstudentjoboffer_student FOREIGN KEY (student_id) references students(id),
+   constraint fk_matchstudentjoboffer_job FOREIGN KEY (job_id) references job_offers(id),
+   constraint fk_matchstudentjoboffer_unique UNIQUE (job_id,student_id),
+   constraint ch_matchstudentjoboffer_studentstatus CHECK (student_status = 'A' or student_status = 'W' or student_status = 'D'),
+   constraint ch_matchstudentjoboffer_companystatus CHECK (company_status = 'A' or company_status = 'W' or company_status = 'D')
+);
