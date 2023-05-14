@@ -6,8 +6,6 @@ import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.models.common.PaginationModel;
 import com.studentbox.api.models.post.PostCreationModel;
 import com.studentbox.api.models.post.PostModel;
-import com.studentbox.api.models.post.PostModificationModel;
-
 import com.studentbox.api.models.post.reply.PostReplyCreationModel;
 import com.studentbox.api.models.post.reply.PostReplyModificationModel;
 import com.studentbox.api.repository.forum.PostRepository;
@@ -15,9 +13,6 @@ import com.studentbox.api.service.forum.PostLikesService;
 import com.studentbox.api.service.forum.PostRepliesService;
 import com.studentbox.api.service.forum.PostService;
 import com.studentbox.api.service.user.UserService;
-
-import com.studentbox.api.utils.containers.SharedMethodContainer;
-
 import com.studentbox.api.utils.mappers.PostMapper;
 import com.studentbox.api.utils.validators.PostValidator;
 import lombok.AllArgsConstructor;
@@ -25,11 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.studentbox.api.utils.containers.ConstantsContainer.*;
@@ -92,12 +85,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void update(String id, PostModificationModel postModificationModel) {
+    public void update(String id, PostCreationModel postModel) {
         Post post = findById(id);
 
-        PostValidator.validatePost(postModificationModel);
+        PostValidator.validatePost(postModel);
 
-        post.modifyPost(postModificationModel);
+        post.modifyPost(postModel);
 
         postRepository.save(post);
     }
@@ -118,7 +111,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void updateReply(String postId, String replyId, PostReplyModificationModel postReplyModel) {
+    public void updateReply(String postId, String replyId, PostReplyCreationModel postReplyModel) {
         postRepliesService.update(postId, replyId, postReplyModel);
     }
 

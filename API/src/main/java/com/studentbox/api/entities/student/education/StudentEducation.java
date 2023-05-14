@@ -2,7 +2,6 @@ package com.studentbox.api.entities.student.education;
 
 import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.models.student.education.EducationCreationModel;
-import com.studentbox.api.models.student.education.EducationModificationModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -46,9 +45,9 @@ public class StudentEducation {
         this.endedAt = educationCreationModel.getEndedAt();
     }
 
-    public void modifyStudentEducation(EducationModificationModel educationModificationModel){
-        this.startedAt = isNull(educationModificationModel.getStartedAt()) ? this.startedAt : educationModificationModel.getStartedAt();
-        this.endedAt = isNull(educationModificationModel.getEndedAt()) ? this.endedAt : educationModificationModel.getEndedAt();
-        this.description = isNull(educationModificationModel.getDescription()) ? this.description : educationModificationModel.getDescription();
+    public void modifyStudentEducation(EducationCreationModel educationCreationModel){
+        this.startedAt = isNull(educationCreationModel.getStartedAt()) ? this.startedAt : educationCreationModel.getStartedAt();
+        this.endedAt = isNull(educationCreationModel.getEndedAt()) ? this.endedAt : educationCreationModel.getEndedAt();
+        this.description = isNull(educationCreationModel.getDescription()) ? this.description : educationCreationModel.getDescription();
     }
 }

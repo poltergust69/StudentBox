@@ -2,7 +2,6 @@ package com.studentbox.api.entities.forum;
 
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.models.post.PostCreationModel;
-import com.studentbox.api.models.post.PostModificationModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -70,9 +69,9 @@ public class Post {
         this.likes = new LinkedList<>();
     }
 
-    public void modifyPost(PostModificationModel postModificationModel){
-        this.title = isNull(postModificationModel.getTitle()) ? this.title : postModificationModel.getTitle();
-        this.content = isNull(postModificationModel.getContent()) ? this.content : postModificationModel.getContent();
+    public void modifyPost(PostCreationModel postModel){
+        this.title = isNull(postModel.getTitle()) ? this.title : postModel.getTitle();
+        this.content = isNull(postModel.getContent()) ? this.content : postModel.getContent();
         this.modifiedAt = Timestamp.from(Instant.now());
     }
 }

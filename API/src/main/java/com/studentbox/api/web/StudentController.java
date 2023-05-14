@@ -5,7 +5,6 @@ import com.studentbox.api.models.student.certificate.CertificateCreationModel;
 import com.studentbox.api.models.student.certificate.CertificateModel;
 import com.studentbox.api.models.student.education.EducationCreationModel;
 import com.studentbox.api.models.student.education.EducationInfo;
-import com.studentbox.api.models.student.education.EducationModificationModel;
 import com.studentbox.api.models.student.employment.EmploymentInfoCreationModel;
 import com.studentbox.api.models.student.skill.SkillModel;
 import com.studentbox.api.service.student.StudentService;
@@ -76,9 +75,9 @@ public class StudentController {
     @PreAuthorize("hasRole('ROLE_STUDENT') && @permissionEvaluator.hasPermissionToAlterStudentEducation(principal, #educationId)")
     public ResponseEntity editStudentEducation(
             @PathVariable String educationId,
-            EducationModificationModel educationModificationModel
+            EducationCreationModel educationCreationModel
     ){
-        studentService.editStudentEducation(educationId, educationModificationModel);
+        studentService.editStudentEducation(educationId, educationCreationModel);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
