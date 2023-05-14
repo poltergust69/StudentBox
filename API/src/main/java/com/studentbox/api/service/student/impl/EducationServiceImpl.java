@@ -5,8 +5,7 @@ import com.studentbox.api.entities.student.education.StudentEducation;
 import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.models.student.education.EducationCreationModel;
-import com.studentbox.api.models.student.education.EducationInfo;
-import com.studentbox.api.models.student.education.EducationModificationModel;
+import com.studentbox.api.models.student.education.EducationInfoModel;
 import com.studentbox.api.repository.student.EducationRepository;
 import com.studentbox.api.repository.student.StudentEducationRepository;
 import com.studentbox.api.service.student.EducationService;
@@ -36,7 +35,7 @@ public class EducationServiceImpl implements EducationService {
     }
 
     @Override
-    public List<EducationInfo> getEducationInfo(Student student) {
+    public List<EducationInfoModel> getEducationInfo(Student student) {
 
         List<StudentEducation> studentEducations = studentEducationRepository.findAllByStudent(student);
 

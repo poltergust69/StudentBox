@@ -8,7 +8,7 @@ import com.studentbox.api.exception.NotFoundException;
 import com.studentbox.api.models.student.certificate.CertificateCreationModel;
 import com.studentbox.api.models.student.certificate.CertificateModel;
 import com.studentbox.api.models.student.education.EducationCreationModel;
-import com.studentbox.api.models.student.education.EducationInfo;
+import com.studentbox.api.models.student.education.EducationInfoModel;
 import com.studentbox.api.models.student.employment.EmploymentInfoCreationModel;
 import com.studentbox.api.models.student.skill.SkillModel;
 import com.studentbox.api.repository.student.StudentRepository;
@@ -65,7 +65,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<EducationInfo> getEducationInfo() {
+    public List<EducationInfoModel> getEducationInfo() {
         Student student = findLoggedInStudent();
         return educationService.getEducationInfo(student);
     }

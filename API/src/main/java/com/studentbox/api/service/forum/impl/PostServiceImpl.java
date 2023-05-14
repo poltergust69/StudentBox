@@ -7,7 +7,6 @@ import com.studentbox.api.models.common.PaginationModel;
 import com.studentbox.api.models.post.PostCreationModel;
 import com.studentbox.api.models.post.PostModel;
 import com.studentbox.api.models.post.reply.PostReplyCreationModel;
-import com.studentbox.api.models.post.reply.PostReplyModificationModel;
 import com.studentbox.api.repository.forum.PostRepository;
 import com.studentbox.api.service.forum.PostLikesService;
 import com.studentbox.api.service.forum.PostRepliesService;

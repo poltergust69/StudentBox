@@ -1,189 +1,136 @@
 package com.studentbox.api.service.employ.impl;
 
-import com.studentbox.api.entities.company.Company;
 import com.studentbox.api.entities.company.job.JobOffer;
-import com.studentbox.api.entities.employ.JobSkill;
-import com.studentbox.api.entities.employ.StudentJobOffer;
+import com.studentbox.api.entities.employ.AcceptanceStatus;
+import com.studentbox.api.entities.employ.JobOfferStatus;
 import com.studentbox.api.entities.student.Student;
-import com.studentbox.api.entities.student.skill.Skill;
-import com.studentbox.api.entities.student.skill.StudentSkill;
 import com.studentbox.api.entities.user.User;
+import com.studentbox.api.entities.user.enums.RoleType;
 import com.studentbox.api.exception.NotFoundException;
-import com.studentbox.api.models.employ.SortedStudentJobOffer;
-import com.studentbox.api.repository.company.CompanyRepository;
+import com.studentbox.api.exception.NotValidException;
+import com.studentbox.api.models.company.joboffer.JobOfferModel;
+import com.studentbox.api.models.student.StudentModel;
 import com.studentbox.api.repository.company.JobOfferRepository;
-import com.studentbox.api.repository.employ.JobSkillRepository;
-import com.studentbox.api.repository.employ.StudentJobOfferRepository;
+import com.studentbox.api.repository.employ.JobOfferStatusesRepository;
 import com.studentbox.api.repository.student.StudentRepository;
-import com.studentbox.api.repository.student.StudentSkillRepository;
+import com.studentbox.api.repository.user.UserRepository;
 import com.studentbox.api.service.employ.EmployService;
+import com.studentbox.api.utils.containers.SharedMethodContainer;
+import com.studentbox.api.utils.mappers.JobOfferMapper;
+import com.studentbox.api.utils.mappers.StudentMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+import static com.studentbox.api.utils.containers.ConstantsContainer.MINIMUM_PERCENTAGE_MATCHING_SKILLS;
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.*;
+import static com.studentbox.api.utils.containers.ParameterConstantsContainer.STUDENT_ID_PARAM;
+import static com.studentbox.api.utils.containers.SharedMethodContainer.calculateMatchingSkillsPercentage;
+import static com.studentbox.api.utils.containers.SharedMethodContainer.getAuthenticatedUserId;
+import static java.util.Objects.isNull;
 
-@AllArgsConstructor
 @Service
+@AllArgsConstructor
 public class EmployServiceImpl implements EmployService {
-
-    private final StudentSkillRepository skillRepository;
-    private final StudentJobOfferRepository studentJobOfferRepository;
-    private final JobSkillRepository jobSkillRepository;
+    private final UserRepository userRepository;
+    private final JobOfferStatusesRepository jobOfferStatusesRepository;
     private final StudentRepository studentRepository;
     private final JobOfferRepository jobOfferRepository;
-    private final CompanyRepository companyRepository;
-
-
 
     @Override
-    public Collection<SortedStudentJobOffer> offers(UUID studentId) {
+    public List<StudentModel> getStudentsApplicableForJobOffer(UUID jobOfferId) {
+        JobOffer jobOffer = jobOfferRepository.findById(jobOfferId)
+                .orElseThrow(() -> new NotFoundException(String.format(JOB_OFFER_NOT_FOUND_EXCEPTION_MESSAGE, jobOfferId)));
 
+        return StudentMapper.mapAllToModel(
+                studentRepository.findAll()
+                        .stream()
+                        .filter(
+                                student -> {
+                                    var jobOfferStatus = jobOfferStatusesRepository.findByStudentAndJobOffer(student, jobOffer);
 
-        Student student = this.findStudentById(studentId);
-        List<Skill> skills = this.findAllSkillsForStudent(student);
-        List<JobOffer> jobOffers = this.studentJobOfferRepository.findAllNotCheckedJobsForStudent();
+                                    if(jobOfferStatus.isEmpty() || jobOfferStatus.get().getCompanyStatus().equals(AcceptanceStatus.WAITING)){
+                                        return calculateMatchingSkillsPercentage(jobOffer, student) * 100 > MINIMUM_PERCENTAGE_MATCHING_SKILLS;
+                                    }
 
-        Collection<SortedStudentJobOffer> collection =
-                this.filterStudents(student, skills, jobOffers);
-
-        collection.forEach(model -> this.studentJobOfferRepository.save(new StudentJobOffer(model.getStudent(),model.getJobOffer(), model.getScore())));
-
-        return collection;
-
+                                    return false;
+                                }
+                        )
+                        .toList()
+        );
     }
 
     @Override
-    public Collection<SortedStudentJobOffer> students(UUID companyId) {
+    public List<JobOfferModel> getJobOffersApplicableForStudent() {
+        UUID studentId = getAuthenticatedUserId();
 
-        List<JobOffer> offers = this.studentJobOfferRepository.findAllNotCheckedAllJobsForCompany(companyId);
-        List<Student> students = this.studentRepository.findAll();
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new NotFoundException(String.format(STUDENT_NOT_FOUND_EXCEPTION_MESSAGE, studentId)));
 
-        Collection<SortedStudentJobOffer> collection =  students
-                .stream()
-                .map(st -> filterStudents(st, this.findAllSkillsForStudent(st), offers))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toCollection(TreeSet::new));
+        return JobOfferMapper.mapAllToModel(
+                jobOfferRepository.findAll()
+                        .stream()
+                        .filter(
+                                jobOffer -> {
+                                    var jobOfferStatus = jobOfferStatusesRepository.findByStudentAndJobOffer(student, jobOffer);
 
-        collection.forEach(model -> this.studentJobOfferRepository.
-                save(new StudentJobOffer(model.getStudent(),model.getJobOffer(), model.getScore())));
+                                    if(jobOfferStatus.isEmpty() || jobOfferStatus.get().getStudentStatus().equals(AcceptanceStatus.WAITING)){
+                                        return calculateMatchingSkillsPercentage(jobOffer, student) * 100 > MINIMUM_PERCENTAGE_MATCHING_SKILLS;
+                                    }
 
-        return collection;
-
+                                    return false;
+                                }
+                        )
+                        .toList()
+        );
     }
 
     @Override
-    public boolean swipeRight(User user, UUID studentId, UUID jobOfferId) {
+    public void swipe(UUID jobOfferId, UUID studentId, AcceptanceStatus acceptanceStatus) {
+        UUID authenticatedUserId = SharedMethodContainer.getAuthenticatedUserId();
 
-        this.findObjects(user,studentId,jobOfferId,'A');
-        return true;
-    }
+        User authenticatedUser = userRepository.findById(authenticatedUserId)
+                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_EXCEPTION_MESSAGE, authenticatedUserId)));
 
-    @Override
-    public boolean swipeLeft(User user,UUID studentId, UUID jobOfferId) {
-        this.findObjects(user,studentId,jobOfferId,'D');
-        return true;
-
-    }
-
-    @Override
-    public Collection<StudentJobOffer> findAllMatched(UUID userId) {
-        Optional<Student> loggedStudent = this.studentRepository.findById(userId);
-
-        if (loggedStudent.isPresent()){
-
-            return this.studentJobOfferRepository.findAllMatchedJobsForStudent(userId);
+        if(authenticatedUser.hasRole(RoleType.COMPANY) && isNull(studentId)){
+            throw new NotValidException(String.format(PARAMETER_REQUIRED_EXCEPTION_MESSAGE, STUDENT_ID_PARAM));
         }
-        Company company = this.companyRepository.findById(userId).
-        orElseThrow(() -> new NotFoundException(COMPANY_NOT_FOUND_EXCEPTION_MESSAGE));
 
-        return this.studentJobOfferRepository.findAllMatchedJobsForCompany(userId);
+        Student student = studentRepository.findById(authenticatedUser.hasRole(RoleType.COMPANY) ? studentId : authenticatedUserId)
+                .orElseThrow(() -> new NotFoundException(String.format(STUDENT_NOT_FOUND_EXCEPTION_MESSAGE, studentId)));
 
-    }
-
-    private void findObjects(User user,UUID studentId, UUID jobOfferId, Character type){
-        Optional<Student> loggedStudent = this.studentRepository.findById(user.getId());
-
-        Student student = this.findStudentById(studentId);
         JobOffer jobOffer = this.jobOfferRepository.findById(jobOfferId)
                 .orElseThrow(() -> new NotFoundException(JOB_OFFER_NOT_FOUND_EXCEPTION_MESSAGE));
-        makeSwiping(loggedStudent,student,jobOffer,type);
+
+        createJobOfferStatusIfNotExists(jobOffer, student);
+
+        JobOfferStatus jobOfferStatus;
+
+        if (authenticatedUser.hasRole(RoleType.COMPANY)){
+            jobOfferStatus = this.jobOfferStatusesRepository.findByJobOfferAndCompanyId(jobOffer, authenticatedUserId);
+            jobOfferStatus.setCompanyStatus(acceptanceStatus);
+        }
+        else{
+            jobOfferStatus = this.jobOfferStatusesRepository.findByJobOfferAndStudentId(jobOffer, authenticatedUserId);
+            jobOfferStatus.setStudentStatus(acceptanceStatus);
+        }
+
+        jobOfferStatusesRepository.save(jobOfferStatus);
     }
 
-    private void makeSwiping(Optional<Student> loggedStudent, Student student, JobOffer jobOffer,Character type){
+    private void createJobOfferStatusIfNotExists(JobOffer jobOffer, Student student){
+        JobOfferStatus jobOfferStatus = new JobOfferStatus();
 
+        jobOfferStatus.setId(UUID.randomUUID());
+        jobOfferStatus.setJobOffer(jobOffer);
 
-        StudentJobOffer studentJobOffer = this.studentJobOfferRepository.findByJobOfferAndStudent(jobOffer, student);
-//        studentJobOffer = studentJobOffer != null ? studentJobOffer : new StudentJobOffer(student,jobOffer);
+        jobOfferStatus.setCompany(jobOffer.getCompany());
+        jobOfferStatus.setCompanyStatus(AcceptanceStatus.WAITING);
 
-            if (loggedStudent.isPresent()){
-                studentJobOffer.setStudentStatus(type);
-            }
-            else{
-                studentJobOffer.setCompanyStatus(type);
-            }
+        jobOfferStatus.setStudent(student);
+        jobOfferStatus.setStudentStatus(AcceptanceStatus.WAITING);
 
-            studentJobOfferRepository.save(studentJobOffer);
-
-    }
-
-    private Collection<SortedStudentJobOffer> filterStudents(Student student, List<Skill> skills, List<JobOffer> offers) {
-
-        return offers
-                .stream()
-                .map(job -> new SortedStudentJobOffer(filterJobOffer(skills, job) +
-                        calculatePointsExperience(student, job), job, student))
-                .filter(offer -> offer.getScore() >= 0.5)
-                .collect(Collectors.toCollection(TreeSet::new));
-
-    }
-
-
-    private double filterJobOffer(List<Skill> skills, JobOffer jobOffer) {
-        List<JobSkill> jobSkills = this.jobSkillRepository.findAllByJobOffer(jobOffer);
-
-        long matchedSkills = jobSkills
-                .stream()
-                .map(JobSkill::getSkill)
-                .filter(jobSkill -> checkSkillOfStudentForJob(skills, jobSkill))
-                .count();
-
-        double totalSkills = jobSkills.size();
-
-        return (matchedSkills / totalSkills);
-
-    }
-
-    private boolean checkSkillOfStudentForJob(List<Skill> skills, Skill jobSkill) {
-
-        return skills.contains(jobSkill);
-    }
-
-    private List<Skill> findAllSkillsForStudent(Student student) {
-        return this.skillRepository
-                .findAllByStudent(student)
-                .stream()
-                .map(StudentSkill::getSkill)
-                .collect(Collectors.toList());
-    }
-
-    private double calculatePointsExperience(Student student, JobOffer jobOffer) {
-        return
-                student
-                        .getEmployments()
-                        .stream()
-                        .mapToDouble(emp -> emp.calculateExperience() + emp.givePointsIfSamePosition(jobOffer.getJobPosition()))
-                        .sum();
-
-    }
-
-    private Student findStudentById(UUID id) {
-        return this
-                .studentRepository
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException
-                        (String.format(STUDENT_NOT_FOUND_EXCEPTION_MESSAGE, id)));
+        jobOfferStatusesRepository.saveAndFlush(jobOfferStatus);
     }
 }

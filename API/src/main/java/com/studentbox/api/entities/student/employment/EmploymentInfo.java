@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -47,16 +46,5 @@ public class EmploymentInfo {
         this.jobPosition = jobPosition;
         this.startedAt = employmentInfoCreationModel.getStartedAt();
         this.endedAt = isNull(employmentInfoCreationModel.getEndedAt()) ? null : employmentInfoCreationModel.getEndedAt();
-    }
-
-    public double calculateExperience(){
-        Period period = Period.between(startedAt,endedAt);
-        return period.getYears() * 25 + period.getMonths() * 2 + period.getDays() * 0.06;
-    }
-
-    public double givePointsIfSamePosition(JobPosition jobPosition){
-        if (jobPosition.equals(this.jobPosition))
-            return 20;
-        return 0;
     }
 }

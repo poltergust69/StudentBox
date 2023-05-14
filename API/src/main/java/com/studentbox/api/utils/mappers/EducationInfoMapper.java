@@ -1,7 +1,7 @@
 package com.studentbox.api.utils.mappers;
 
 import com.studentbox.api.entities.student.education.StudentEducation;
-import com.studentbox.api.models.student.education.EducationInfo;
+import com.studentbox.api.models.student.education.EducationInfoModel;
 
 import java.util.List;
 
@@ -12,11 +12,11 @@ public class EducationInfoMapper {
         throw new IllegalStateException(UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE);
     }
 
-    public static EducationInfo mapToModel(StudentEducation studentEducation){
-        return new EducationInfo(studentEducation);
+    public static EducationInfoModel mapToModel(StudentEducation studentEducation){
+        return new EducationInfoModel(studentEducation);
     }
 
-    public static List<EducationInfo> mapAllToModel(List<StudentEducation> studentEducations){
+    public static List<EducationInfoModel> mapAllToModel(List<StudentEducation> studentEducations){
         return studentEducations
                 .stream()
                 .map(EducationInfoMapper::mapToModel)

@@ -7,9 +7,9 @@ import java.util.UUID;
 
 @Data
 public class UserModel {
-    public UUID id;
-    public String username;
-    public String avatarUrl;
+    private UUID id;
+    private String username;
+    private String avatarUrl;
 
     public UserModel(User user){
         this.id = user.getId();

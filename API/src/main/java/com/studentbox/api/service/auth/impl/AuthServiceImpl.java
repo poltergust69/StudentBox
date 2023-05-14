@@ -11,10 +11,10 @@ import com.studentbox.api.entities.user.User;
 import com.studentbox.api.exception.NotAuthenticatedException;
 import com.studentbox.api.models.auth.AuthRequestModel;
 import com.studentbox.api.models.auth.AuthResponseModel;
-import com.studentbox.api.models.company.CompanyDetailsModel;
-import com.studentbox.api.models.student.StudentDetailsModel;
-import com.studentbox.api.models.user.UserDetailsModel;
 import com.studentbox.api.service.auth.AuthService;
+import com.studentbox.api.utils.mappers.CompanyMapper;
+import com.studentbox.api.utils.mappers.StudentMapper;
+import com.studentbox.api.utils.mappers.UserMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -93,29 +93,29 @@ public class AuthServiceImpl implements AuthService {
 
     private String generateAccessToken(User user) throws JsonProcessingException {
         return JWT.create()
-                .withSubject(new ObjectMapper().writeValueAsString(new UserDetailsModel(user)))
-                .withExpiresAt(new Date(System.currentTimeMillis()+ ACCESS_TOKEN_VALID_FOR_MILLISECONDS))
+                .withSubject(new ObjectMapper().writeValueAsString(UserMapper.mapToDetailsModel(user)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALID_FOR_MILLISECONDS))
                 .sign(Algorithm.HMAC256(securityConfig.getJwtSecretKey()));
     }
 
     private String generateAccessToken(Company company) throws JsonProcessingException {
         return JWT.create()
-                .withSubject(new ObjectMapper().writeValueAsString(new CompanyDetailsModel(company)))
-                .withExpiresAt(new Date(System.currentTimeMillis()+ ACCESS_TOKEN_VALID_FOR_MILLISECONDS))
+                .withSubject(new ObjectMapper().writeValueAsString(CompanyMapper.mapToDetailsModel(company)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALID_FOR_MILLISECONDS))
                 .sign(Algorithm.HMAC256(securityConfig.getJwtSecretKey()));
     }
 
     private String generateAccessToken(Student student) throws JsonProcessingException {
         return JWT.create()
-                .withSubject(new ObjectMapper().writeValueAsString(new StudentDetailsModel(student)))
-                .withExpiresAt(new Date(System.currentTimeMillis()+ ACCESS_TOKEN_VALID_FOR_MILLISECONDS))
+                .withSubject(new ObjectMapper().writeValueAsString(StudentMapper.mapToDetailsModel(student)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALID_FOR_MILLISECONDS))
                 .sign(Algorithm.HMAC256(securityConfig.getJwtSecretKey()));
     }
 
     private String generateRefreshToken(User user) throws JsonProcessingException {
         return JWT.create()
-                .withSubject(new ObjectMapper().writeValueAsString(new UserDetailsModel(user)))
-                .withExpiresAt(new Date(System.currentTimeMillis()+REFRESH_TOKEN_VALID_FOR_MILLISECONDS))
+                .withSubject(new ObjectMapper().writeValueAsString(UserMapper.mapToDetailsModel(user)))
+                .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALID_FOR_MILLISECONDS))
                 .sign(Algorithm.HMAC512(securityConfig.getJwtRefreshSecretKey()));
     }
 }

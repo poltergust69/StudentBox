@@ -1,7 +1,6 @@
 package com.studentbox.api.entities.student;
 
 import com.studentbox.api.entities.student.certificate.Certificate;
-import com.studentbox.api.entities.student.education.Education;
 import com.studentbox.api.entities.student.education.StudentEducation;
 import com.studentbox.api.entities.student.employment.EmploymentInfo;
 import com.studentbox.api.entities.student.skill.Skill;

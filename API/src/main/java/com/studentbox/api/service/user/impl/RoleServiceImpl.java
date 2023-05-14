@@ -23,7 +23,7 @@ public class RoleServiceImpl implements RoleService {
     public List<RoleModel> getAll() {
         var roles = roleRepository.findAll();
 
-        return RoleMapper.mapRolesToModel(roles);
+        return RoleMapper.mapAllToModel(roles);
     }
 
     @Override

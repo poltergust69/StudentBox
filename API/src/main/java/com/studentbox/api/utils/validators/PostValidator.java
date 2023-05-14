@@ -2,7 +2,6 @@ package com.studentbox.api.utils.validators;
 
 import com.studentbox.api.exception.NotValidException;
 import com.studentbox.api.models.post.PostCreationModel;
-import com.studentbox.api.models.post.PostModel;
 import com.studentbox.api.models.post.reply.PostReplyCreationModel;
 
 import static com.studentbox.api.utils.containers.ConstantsContainer.POST_TITLE_MAX_LENGTH;

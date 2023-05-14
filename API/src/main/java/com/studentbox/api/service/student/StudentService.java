@@ -4,7 +4,7 @@ import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.models.student.certificate.CertificateCreationModel;
 import com.studentbox.api.models.student.certificate.CertificateModel;
 import com.studentbox.api.models.student.education.EducationCreationModel;
-import com.studentbox.api.models.student.education.EducationInfo;
+import com.studentbox.api.models.student.education.EducationInfoModel;
 import com.studentbox.api.models.student.employment.EmploymentInfoCreationModel;
 import com.studentbox.api.models.student.skill.SkillModel;
 
@@ -15,7 +15,7 @@ public interface StudentService {
     List<SkillModel> getSkillsForStudent();
     void addSkillToStudent(String skillId);
     void deleteStudentSkill(String skillId);
-    List<EducationInfo> getEducationInfo();
+    List<EducationInfoModel> getEducationInfo();
     void addEducationToStudent(EducationCreationModel educationCreationModel);
     void editStudentEducation(String id, EducationCreationModel educationCreationModel);
     void deleteStudentEducation(String id);

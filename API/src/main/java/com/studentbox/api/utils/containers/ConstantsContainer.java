@@ -34,4 +34,9 @@ public class ConstantsContainer {
     public static final String ALL_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     public static final String STUDENT_ROLE = "ROLE_STUDENT";
     public static final String COMPANY_ROLE = "ROLE_COMPANY";
+    public static final double EXPERIENCE_MATCHING_JOB_POSITION_POINTS = 20;
+    public static final double EXPERIENCE_YEAR_POINTS = 25;
+    public static final double EXPERIENCE_MONTH_POINTS = 2;
+    public static final double EXPERIENCE_DAYS_POINTS = 0.06;
+    public static final double MINIMUM_PERCENTAGE_MATCHING_SKILLS = 65D;
 }

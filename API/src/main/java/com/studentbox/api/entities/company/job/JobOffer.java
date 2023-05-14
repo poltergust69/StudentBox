@@ -2,13 +2,13 @@ package com.studentbox.api.entities.company.job;
 
 import com.studentbox.api.entities.company.Company;
 import com.studentbox.api.entities.jobposition.JobPosition;
-import com.studentbox.api.models.company.joboffer.JobOfferCreationModel;
+import com.studentbox.api.entities.student.skill.Skill;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -39,13 +39,10 @@ public class JobOffer {
     @Column(name="modified_at")
     private Timestamp modifiedAt;
 
-    public JobOffer(JobOfferCreationModel jobOfferCreationModel) {
-        this.id = UUID.randomUUID();
-        this.company = jobOfferCreationModel.getCompany();
-        this.jobPosition = jobOfferCreationModel.getJobPosition();
-        this.description = jobOfferCreationModel.getDescription();
-        this.salary = jobOfferCreationModel.getSalary();
-        this.modifiedAt = Timestamp.from(Instant.now());
-        this.createdAt = Timestamp.from(Instant.now());
-    }
+
+    @ManyToMany
+    @JoinTable(name="job_offer_skills",
+            joinColumns = @JoinColumn(name="job_id"),
+            inverseJoinColumns = @JoinColumn(name="skill_id"))
+    List<Skill> skills;
 }

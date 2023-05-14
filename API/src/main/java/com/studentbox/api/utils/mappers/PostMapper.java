@@ -5,7 +5,6 @@ import com.studentbox.api.entities.user.User;
 import com.studentbox.api.models.post.PostModel;
 import java.util.List;
 
-import static com.studentbox.api.utils.containers.ConstantsContainer.DEFAULT_LIKES_COUNT;
 import static com.studentbox.api.utils.containers.ConstantsContainer.REPLY_COUNT_LIMITED;
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE;
 import static java.util.Objects.isNull;

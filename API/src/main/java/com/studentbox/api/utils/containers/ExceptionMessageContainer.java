@@ -35,4 +35,5 @@ public class ExceptionMessageContainer {
     public static final String SECRET_KEY_RESET_NOT_VALID_EXCEPTION_MESSAGE = "The password could not be reset because the information provided was not valid, the link has expired.";
     public static final String STUDENT_NOT_FOUND_EXCEPTION_MESSAGE = "The student with username \"%s\" does not exist.";
     public static final String COMPANY_NOT_FOUND_EXCEPTION_MESSAGE = "The company with username \"%s\" does not exist.";
+    public static final String PARAMETER_REQUIRED_EXCEPTION_MESSAGE = "The parameter \"%s\" is required!";
 }

@@ -4,7 +4,7 @@ import com.studentbox.api.common.PermissionEvaluator;
 import com.studentbox.api.models.student.certificate.CertificateCreationModel;
 import com.studentbox.api.models.student.certificate.CertificateModel;
 import com.studentbox.api.models.student.education.EducationCreationModel;
-import com.studentbox.api.models.student.education.EducationInfo;
+import com.studentbox.api.models.student.education.EducationInfoModel;
 import com.studentbox.api.models.student.employment.EmploymentInfoCreationModel;
 import com.studentbox.api.models.student.skill.SkillModel;
 import com.studentbox.api.service.student.StudentService;
@@ -54,9 +54,9 @@ public class StudentController {
     }
 
     @GetMapping("/education")
-    @ApiOperation(value="Get a list of logged-in user's education info.", response = EducationInfo[].class)
+    @ApiOperation(value="Get a list of logged-in user's education info.", response = EducationInfoModel[].class)
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public ResponseEntity<List<EducationInfo>> getEducationInfo(){
+    public ResponseEntity<List<EducationInfoModel>> getEducationInfo(){
         return ResponseEntity.ok(studentService.getEducationInfo());
     }
 

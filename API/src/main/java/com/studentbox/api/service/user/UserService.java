@@ -3,7 +3,6 @@ package com.studentbox.api.service.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.entities.user.enums.RoleType;
-import com.studentbox.api.models.auth.AuthRefreshRequestModel;
 import com.studentbox.api.models.auth.AuthRequestModel;
 import com.studentbox.api.models.auth.AuthResponseModel;
 import com.studentbox.api.models.sendgrid.ResetPasswordModel;

@@ -9,8 +9,6 @@ import com.studentbox.api.repository.company.JobOfferRepository;
 import com.studentbox.api.service.company.JobOfferService;
 import com.studentbox.api.utils.mappers.JobOfferMapper;
 import com.studentbox.api.utils.validators.JobOfferValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,11 +25,10 @@ public class JobOfferServiceImpl implements JobOfferService {
 
     JobOfferRepository jobOfferRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(JobOfferServiceImpl.class);
-
     @Override
     public List<JobOfferModel> getPage(PaginationModel paginationModel) {
         Pageable pageable = PageRequest.of(paginationModel.getPageIndex(), paginationModel.getPageSize(), POSTS_DEFAULT_SORT_BY);
+
         var username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         var jobOffers = jobOfferRepository.findByCompanyUserUsername(username, pageable);
 
@@ -41,6 +38,7 @@ public class JobOfferServiceImpl implements JobOfferService {
     @Override
     public JobOffer findById(String id) {
         UUID jobOfferId = UUID.fromString(id);
+
         return jobOfferRepository.findById(jobOfferId).orElseThrow(
                 () -> new NotFoundException(String.format(JOB_OFFER_NOT_FOUND_EXCEPTION_MESSAGE, id))
         );
@@ -49,6 +47,7 @@ public class JobOfferServiceImpl implements JobOfferService {
     @Override
     public JobOfferModel findBasicById(String id) {
         var jobOffer = findById(id);
+
         return JobOfferMapper.mapToModel(jobOffer);
     }
 
@@ -56,15 +55,9 @@ public class JobOfferServiceImpl implements JobOfferService {
     public void create(JobOfferCreationModel jobOfferCreationModel) {
         JobOfferValidator.validateJobOffer(jobOfferCreationModel);
 
-        JobOffer jobOffer = new JobOffer(jobOfferCreationModel);
+        JobOffer jobOffer = JobOfferMapper.mapFromCreationModel(jobOfferCreationModel);
 
-        try{
-            jobOfferRepository.save(jobOffer);
-        }
-        catch (Exception e){
-            logger.error(e.getMessage());
-            throw e;
-        }
+        jobOfferRepository.save(jobOffer);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.studentbox.api.entities.user;
 
+import com.studentbox.api.entities.user.enums.RoleType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -33,5 +34,9 @@ public class User {
         this.username = username;
         this.password = password;
         this.role = role;
+    }
+
+    public boolean hasRole(RoleType roleType){
+        return role.getName().equals(roleType.name());
     }
 }
