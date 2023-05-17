@@ -36,6 +36,7 @@ public class CompanyMapper {
         UserDetailsModel userDetailsModel = UserMapper.mapToDetailsModel(company.getUser());
         CompanyDetailsModel companyDetailsModel = new CompanyDetailsModel(userDetailsModel);
 
+        companyDetailsModel.setFullName(company.getName());
         companyDetailsModel.setName(company.getName());
 
         return companyDetailsModel;

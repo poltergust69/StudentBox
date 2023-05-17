@@ -3,6 +3,7 @@ package com.studentbox.api.service.forum.impl;
 import com.studentbox.api.entities.forum.Post;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.exception.NotFoundException;
+import com.studentbox.api.models.common.PageModel;
 import com.studentbox.api.models.common.PaginationModel;
 import com.studentbox.api.models.post.PostCreationModel;
 import com.studentbox.api.models.post.PostModel;
@@ -38,14 +39,16 @@ public class PostServiceImpl implements PostService {
     private final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
 
     @Override
-    public List<PostModel> getPage(PaginationModel paginationModel) {
+    public PageModel<PostModel> getPage(PaginationModel paginationModel) {
         boolean isAuthenticated = isUserAuthenticated();
         User user = isAuthenticated ? userService.findAuthenticatedUser() : null;
 
         Pageable pageable = PageRequest.of(paginationModel.getPageIndex(), paginationModel.getPageSize(), POSTS_DEFAULT_SORT_BY);
         var posts = postRepository.findAll(pageable);
+        var postsCount = postRepository.count();
+        var pageCount = (int) Math.ceil(((double)postsCount / paginationModel.getPageSize()));
 
-        return PostMapper.mapAllToModel(posts.toList(), LIMITED_VIEW_ENABLED, user);
+        return new PageModel<>(PostMapper.mapAllToModel(posts.toList(), LIMITED_VIEW_ENABLED, user), pageable, pageCount);
     }
 
     @Override

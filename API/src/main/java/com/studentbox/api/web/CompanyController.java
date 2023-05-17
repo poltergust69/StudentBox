@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/companies")
 @AllArgsConstructor
+@CrossOrigin("*")
 public class CompanyController {
 
     JobOfferService jobOfferService;

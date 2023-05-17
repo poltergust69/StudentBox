@@ -6,6 +6,7 @@ import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.entities.student.employment.EmploymentInfo;
 import com.studentbox.api.entities.student.skill.Skill;
 import com.studentbox.api.exception.NotAuthenticatedException;
+import org.json.JSONObject;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
@@ -47,6 +48,30 @@ public class SharedMethodContainer {
         else{
             throw new NotAuthenticatedException();
         }
+    }
+
+    public static UUID extractUserIdFromToken(String token){
+        String [] parts = token.split("\\.");
+        String payload = parts[1];
+        String decodedPayload = decodeBase64(payload);
+
+        JSONObject dataJson = new JSONObject(decodedPayload);
+
+        String sub = dataJson.getString(DATA_PARAM);
+
+        JSONObject payloadJson = new JSONObject(sub);
+
+        String userId = payloadJson.has(USER_ID_PARAM) ? payloadJson.getString(USER_ID_PARAM) : null;
+
+        if(dataJson.getLong(EXPIRY_PARAM) < (System.currentTimeMillis() / 1000) || isNull(userId)){
+            throw new NotAuthenticatedException();
+        }
+
+        return isNull(userId) ? null : UUID.fromString(userId);
+    }
+
+    private static String decodeBase64(String encodedString) {
+        return new String(Base64.getUrlDecoder().decode(encodedString));
     }
 
     public static double calculateMatchingSkillsPercentage(JobOffer jobOffer, Student student){

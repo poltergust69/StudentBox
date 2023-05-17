@@ -22,6 +22,7 @@ import com.studentbox.api.service.auth.AuthService;
 import com.studentbox.api.service.user.RoleService;
 import com.studentbox.api.service.user.SendGridService;
 import com.studentbox.api.service.user.UserService;
+import com.studentbox.api.utils.containers.SharedMethodContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +39,7 @@ import static com.studentbox.api.utils.containers.LoggerMessageContainer.ADMIN_U
 import static com.studentbox.api.utils.containers.LoggerMessageContainer.ADMIN_USER_NOT_ADDED_MESSAGE;
 import static com.studentbox.api.utils.validators.UserDetailsValidator.validateUserDetails;
 import static com.studentbox.api.utils.validators.UserDetailsValidator.validateUserPassword;
+import static java.util.Objects.isNull;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -132,29 +134,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponseModel refreshToken(String refreshToken) throws JsonProcessingException {
-        User user = findAuthenticatedUser();
+        UUID usernameFromToken = SharedMethodContainer.extractUserIdFromToken(refreshToken);
 
-        if(user.getRole().getAuthority().equals(STUDENT_ROLE)){
-            Student student = studentRepository.findById(user.getId()).orElseThrow(
-                    () -> new NotFoundException(String.format(STUDENT_NOT_FOUND_EXCEPTION_MESSAGE, user.getUsername()))
-            );
-            return authService.refreshToken(student, refreshToken);
+        if(isNull(usernameFromToken)){
+            throw new NotAuthenticatedException();
         }
-        else if(user.getRole().getAuthority().equals(COMPANY_ROLE)){
-            Company company = companyRepository.findById(user.getId()).orElseThrow(
-                    () -> new NotFoundException(String.format(COMPANY_NOT_FOUND_EXCEPTION_MESSAGE, user.getUsername()))
-            );
-            return authService.refreshToken(company, refreshToken);
-        }
-        else{
-            return authService.refreshToken(user, refreshToken);
-        }
+
+        User user = userRepository.findById(usernameFromToken)
+                .orElseThrow(NotAuthenticatedException::new);
+
+        return authService.refreshToken(user, refreshToken);
     }
 
     @Override
     public User findAuthenticatedUser() {
         CustomAuthentication authentication = CustomAuthentication.getAuthentication();
-        return userRepository.findUserByUsername((String) authentication.getPrincipal()).orElseThrow(NotAuthenticatedException::new);
+
+        return userRepository.findById(UUID.fromString(authentication.getPrincipal().toString()))
+                .orElseThrow(() -> new NotFoundException(String.format(USER_NOT_FOUND_EXCEPTION_MESSAGE, authentication.getPrincipal().toString())));
     }
 
     @Override

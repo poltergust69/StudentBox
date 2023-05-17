@@ -1,6 +1,7 @@
 package com.studentbox.api.web;
 
 import com.studentbox.api.common.PermissionEvaluator;
+import com.studentbox.api.models.common.PageModel;
 import com.studentbox.api.models.common.PaginationModel;
 import com.studentbox.api.models.post.PostCreationModel;
 import com.studentbox.api.models.post.PostModel;
@@ -13,18 +14,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/forum/posts")
 @AllArgsConstructor
+@CrossOrigin("*")
 public class ForumController {
     private final PostService postService;
 
     @GetMapping
     @ApiOperation(value="Get a page of posts.", response = PostModel[].class)
-    public ResponseEntity<List<PostModel>> getPageOfPosts(
+    public ResponseEntity<PageModel<PostModel>> getPageOfPosts(
             PaginationModel paginationModel
         ){
         return ResponseEntity.ok(postService.getPage(paginationModel));
@@ -83,7 +83,7 @@ public class ForumController {
     }
 
     @ApiOperation(value="Add a reply to a post.")
-    @PostMapping("/{postId}/reply")
+    @PostMapping("/{postId}/replies")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity createReplyToPost(
             @PathVariable String postId,
@@ -94,7 +94,7 @@ public class ForumController {
     }
 
     @ApiOperation(value="Modify a reply.")
-    @PatchMapping("/{postId}/reply/{replyId}")
+    @PatchMapping("/{postId}/replies/{replyId}")
     @PreAuthorize("isAuthenticated() && @permissionEvaluator.hasPermissionToAlterPostReply(principal, #replyId)")
     public ResponseEntity updateReplyToPost(
             @PathVariable String postId,
@@ -105,7 +105,7 @@ public class ForumController {
         return ResponseEntity.ok().build();
     }
     @ApiOperation(value="Delete a reply.")
-    @DeleteMapping("/{postId}/reply/{replyId}")
+    @DeleteMapping("/{postId}/replies/{replyId}")
     @PreAuthorize("isAuthenticated() && @permissionEvaluator.hasPermissionToAlterPostReply(principal, #replyId)")
     public ResponseEntity deleteReplyToPost(
             @PathVariable String postId,
@@ -116,7 +116,7 @@ public class ForumController {
     }
 
     @ApiOperation(value="Like reply.")
-    @PatchMapping("/{postId}/reply/{replyId}/like")
+    @PutMapping("/{postId}/replies/{replyId}/like")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity likeReplyToPost(
             @PathVariable String postId,

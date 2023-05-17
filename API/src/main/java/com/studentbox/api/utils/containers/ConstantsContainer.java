@@ -39,4 +39,7 @@ public class ConstantsContainer {
     public static final double EXPERIENCE_MONTH_POINTS = 2;
     public static final double EXPERIENCE_DAYS_POINTS = 0.06;
     public static final double MINIMUM_PERCENTAGE_MATCHING_SKILLS = 65D;
+    public static final String USER_ID_PARAM = "id";
+    public static final String EXPIRY_PARAM = "exp";
+    public static final String DATA_PARAM = "sub";
 }

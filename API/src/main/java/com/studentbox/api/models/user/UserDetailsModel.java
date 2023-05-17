@@ -12,11 +12,15 @@ public class UserDetailsModel {
     private String username;
     private Role role;
     private String email;
+    private String avatarUrl;
+    protected String fullName;
 
     public UserDetailsModel(UserDetailsModel userDetailsModel){
         this.id = userDetailsModel.getId();
         this.username = userDetailsModel.getUsername();
         this.role = userDetailsModel.getRole();
         this.email = userDetailsModel.getEmail();
+        this.avatarUrl = userDetailsModel.getAvatarUrl();
+        this.fullName = userDetailsModel.getFullName();
     }
 }

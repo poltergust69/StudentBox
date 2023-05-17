@@ -46,6 +46,7 @@ public class StudentMapper {
         UserDetailsModel userDetailsModel = UserMapper.mapToDetailsModel(student.getUser());
         StudentDetailsModel studentDetailsModel = new StudentDetailsModel(userDetailsModel);
 
+        studentDetailsModel.setFullName(student.getFullName());
         studentDetailsModel.setFirstName(student.getFirstName());
         studentDetailsModel.setLastName(student.getLastName());
         studentDetailsModel.setDateOfBirth(student.getDateOfBirth().toString());

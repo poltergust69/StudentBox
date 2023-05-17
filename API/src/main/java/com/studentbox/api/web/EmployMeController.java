@@ -18,6 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/employ")
 @AllArgsConstructor
+@CrossOrigin("*")
 public class EmployMeController {
 
     private final EmployService employService;

@@ -29,6 +29,8 @@ public class UserMapper {
         model.setUsername(user.getUsername());
         model.setEmail(user.getEmail());
         model.setRole(user.getRole());
+        model.setAvatarUrl(user.getAvatarUrl());
+        model.setFullName(user.getUsername());
 
         return model;
     }
