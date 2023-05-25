@@ -7,6 +7,7 @@ import LoginPage from "../LoginPage/LoginPage";
 import LogOutPage from "../LogOutPage/LogOutPage";
 import { EmptyProps } from "../../Models/Shared/SharedInterfaces";
 import ForumPage from "../ForumPage/ForumPage";
+import RegisterPage from "../RegisterPage/RegisterPage";
 
 const AppPage: React.FC<EmptyProps> = (props: EmptyProps) => {
   const [changeCounter, setChangeCounter] = useState<number>(0);
@@ -34,6 +35,10 @@ const AppPage: React.FC<EmptyProps> = (props: EmptyProps) => {
     {
       path: "logout",
       element: <LogOutPage callback={updateChangeCounter} />,
+    },
+    {
+      path: "register",
+      element: <RegisterPage callback={updateChangeCounter} />,
     },
     {
       path: "forum",

@@ -1,7 +1,7 @@
 import { Button, Container, Grid, TextField, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { isLoggedIn, login } from "../../Services/AuthService/AuthService";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { AuthManagerProps, LoginState } from "../../Models/Auth/AuthInterfaces";
 
 const LoginPage: React.FC<AuthManagerProps> = (props: AuthManagerProps) => {
@@ -69,7 +69,7 @@ const LoginPage: React.FC<AuthManagerProps> = (props: AuthManagerProps) => {
     <Grid
       container
       alignContent={"center"}
-      sx={{ height: "100vh" }}
+      sx={{ height: "120vh" }}
       className="bg-primary bg-opacity-10"
     >
       <Grid item xs={12}>
@@ -139,9 +139,20 @@ const LoginPage: React.FC<AuthManagerProps> = (props: AuthManagerProps) => {
                 >
                   Log In
                 </span>
+        
               </Button>
             </Grid>
           </Grid>
+          <Grid item className="col-4 p-0 mt-3"
+        container
+        justifyContent="center"
+        alignItems="center">
+        <Link to="/register" style={{ textDecoration: "none" }}>
+          <span className="text-transform-none" style={{ fontSize: "1.3rem" }}>
+            Sign Up
+          </span>
+        </Link>
+      </Grid>
         </Container>
       </Grid>
     </Grid>
