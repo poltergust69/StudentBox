@@ -1,12 +1,15 @@
 package com.studentbox.api.web;
 
 import com.studentbox.api.common.PermissionEvaluator;
+import com.studentbox.api.models.company.RegisterCompanyDetails;
+import com.studentbox.api.models.student.StudentDetailsModel;
 import com.studentbox.api.models.student.certificate.CertificateCreationModel;
 import com.studentbox.api.models.student.certificate.CertificateModel;
 import com.studentbox.api.models.student.education.EducationCreationModel;
 import com.studentbox.api.models.student.education.EducationInfoModel;
 import com.studentbox.api.models.student.employment.EmploymentInfoCreationModel;
 import com.studentbox.api.models.student.skill.SkillModel;
+import com.studentbox.api.models.user.RegisterUserDetails;
 import com.studentbox.api.service.student.StudentService;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -139,6 +142,15 @@ public class StudentController {
     ){
         studentService.deleteEmploymentInfo(employmentId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/register")
+    @PreAuthorize("isAnonymous()")
+    public ResponseEntity register(
+            RegisterUserDetails registerUserDetails
+    ) {
+        studentService.registerStudent(registerUserDetails);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }

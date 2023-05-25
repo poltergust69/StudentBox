@@ -20,6 +20,6 @@ public class CompanyDetailsValidator {
     }
 
     public static boolean isNameInvalid(String name){
-        return !isNull(name) && !name.isBlank();
+        return isNull(name) || name.isBlank();
     }
 }
