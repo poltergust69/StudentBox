@@ -50,8 +50,10 @@ public class StudentSkillServiceImpl implements StudentSkillService {
     @Override
     public void deleteStudentSkill(Student student, String skillId) {
         UUID skillUUID = UUID.fromString(skillId);
+
         Skill skill = skillRepository.findById(skillUUID)
                 .orElseThrow(() -> new NotFoundException(String.format(SKILL_NOT_FOUND_EXCEPTION_MESSAGE, skillId)));
+
         StudentSkill studentSkill = studentSkillRepository.findByStudentAndSkill(student, skill)
                 .orElseThrow(() -> new NotFoundException(String.format(STUDENT_HAS_NO_SKILL_EXCEPTION_MESSAGE, student.getFullName(), skill.getName())));
 

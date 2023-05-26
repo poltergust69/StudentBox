@@ -11,12 +11,12 @@ import java.util.UUID;
 @Entity
 @Table(name="companies")
 @NoArgsConstructor
-public class Company {
+public class Company{
     @Id
     private UUID id;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name="company_name")

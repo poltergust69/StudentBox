@@ -1,31 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { Button, Container, TextField, Typography } from '@mui/material';
+import React, { useState } from "react";
+import { Alert, Button, Container, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { isLoggedIn } from "../../Services/AuthService/AuthService";
-import { AuthManagerProps} from "../../Models/Auth/AuthInterfaces";
-import { RegisterState } from "../../Models/Auth/Register";
+import { RegisterState, RegisterStudentDetails, RegistrationType } from "../../Models/Register/Register";
 import { Nav } from "react-bootstrap";
-import registerService from "../../Services/RegisterService/RegisterService";
-import { RegisterCompanyDetails } from "../../Models/Auth/Register";
-import { RegisterUserDetails } from "../../Models/Auth/Register";
-import { useNavigate } from "react-router-dom";
-import { JSX } from "react/jsx-runtime";
+import { register } from "../../Services/RegisterService/RegisterService";
+import { RegisterCompanyDetails } from "../../Models/Register/Register";
+import { EmptyProps } from "../../Models/Shared/SharedInterfaces";
+import { Link, useNavigate } from "react-router-dom";
 
-const RegisterPage = (props: AuthManagerProps): JSX.Element => {
+const RegisterPage: React.FC<EmptyProps> = (props: EmptyProps) => {
 
   const [state, setState] = useState<RegisterState>({
     name: "",
     avatarUrl: "https://example.com/avatar.jpg",
-    user: "",
     email: "",
     username: "",
     password: "",
     confirmPassword: "",
     hasError: false,
+    description: "",
+    dateOfBirth: "",
+    firstName: "",
+    lastName: "",
     error: "",
-    isRegistered: false,
-    userType: "",
+    type: null,
     errorMessage: ""
   });
 
@@ -67,66 +65,81 @@ const RegisterPage = (props: AuthManagerProps): JSX.Element => {
     });
   };
 
-  const setUserType = (userType: string): void => {
+  const setFirstName = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setState({
       ...state,
-      userType: userType,
+      firstName: e.target.value,
     });
   };
 
-  const handleRegister = async () => {
-    try {
-      if (state.userType === "student") {
-        const registerData: RegisterUserDetails = new RegisterUserDetails(
-          state.username,
-          state.email,
-          state.password,
-          state.avatarUrl,
-        );
-        console.log(registerData)
-        await registerService.registerStudent(registerData);
-
-      } else if (state.userType === "company") {
-        const registerData: RegisterCompanyDetails = new RegisterCompanyDetails(
-          state.username,
-          state.email,
-          state.password,
-          state.avatarUrl,
-          state.name
-        );
-        console.log(registerData)
-        await registerService.registerCompany(registerData);
-      }
-      console.log("Registration successful");
-      navigate("/login");
-    } catch (error) {
-      console.error("Registration failed:", error);
-    }
+  const setLastName = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setState({
+      ...state,
+      lastName: e.target.value,
+    });
   };
 
+  const setDescription = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setState({
+      ...state,
+      description: e.target.value,
+    });
+  };
 
-  useEffect(() => {
-    isLoggedIn()
-      .then((result) => {
-        if (result) {
-          setState({
-            ...state,
-            isRegistered: true,
-          });
-          props.callback();
-        }
-      })
-      .catch(() => { });
-  }, []);
+  const setDateOfBirth = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setState({
+      ...state,
+      dateOfBirth: e.target.value,
+    });
+  };
 
-  if (state.isRegistered) {
-    return <Navigate to="/login" />;
-  }
+  const setUserType = (type: RegistrationType): void => {
+    setState((state) => (
+      {
+        ...state,
+        type,
+      }
+    ));
+  };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleRegister();
+  const handleRegister = async () => {
+    let registerData: RegisterStudentDetails | RegisterCompanyDetails;
+
+    if (state.type === RegistrationType.STUDENT) {
+      registerData = new RegisterStudentDetails(
+        state.username,
+        state.email,
+        state.password,
+        state.avatarUrl,
+        state.firstName,
+        state.lastName,
+        state.dateOfBirth,
+        state.description
+      );
     }
+    else if (state.type === RegistrationType.COMPANY) {
+      registerData = new RegisterCompanyDetails(
+        state.username,
+        state.email,
+        state.password,
+        state.avatarUrl,
+        state.name
+      );
+    }
+    else {
+      throw Error(`REGISRTATION FOR TYPE OF USER ${state.type}.`);
+    }
+    register(registerData)
+      .then(() => {
+        navigate('/login')
+      })
+      .catch((error) => {
+        setState((state) => ({
+          ...state,
+          hasError: true,
+          error: error.response.data.message
+        }))
+      })
   };
 
   return (
@@ -141,6 +154,30 @@ const RegisterPage = (props: AuthManagerProps): JSX.Element => {
           <h1 className="text-center display-4 pb-3 mb-5 border-bottom border-2 col-6 mx-auto">
             Register
           </h1>
+          <Grid container xs={6} direction={'row'} className="mb-5 mx-auto">
+              <Grid item xs={6}>
+                <Button
+                  fullWidth
+                  variant={state.type === RegistrationType.STUDENT ? "contained" : "outlined"}
+                  color={'success'}
+                  size={'large'}
+                  onClick={() => setUserType(RegistrationType.STUDENT)}
+                  className={`${state.type !== RegistrationType.STUDENT ? 'text-secondary border-secondary opacity-75' : ''} rounded-0 rounded-start`}>
+                  Student
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  fullWidth
+                  variant={state.type === RegistrationType.COMPANY ? "contained" : "outlined"}
+                  color={'success'}
+                  size={'large'}
+                  onClick={() => setUserType(RegistrationType.COMPANY)}
+                  className={`${state.type !== RegistrationType.COMPANY ? 'text-secondary border-secondary opacity-75' : ''} rounded-0 rounded-end`}>
+                  Company
+                </Button>
+              </Grid>
+            </Grid>
           <Grid
             container
             spacing={2}
@@ -149,27 +186,26 @@ const RegisterPage = (props: AuthManagerProps): JSX.Element => {
             direction="column"
             className="d-flex mx-auto p-0"
           >
+            <Grid item className="col-9 d-flex justify-items-center p-0">
+              {
+                state.hasError && (
+                  <Alert severity={'error'} className="mx-auto my-2 p-3 col-12">{state.error}</Alert>
+                )
+              }
+            </Grid>
             <Grid item className="col-6 d-flex justify-items-center p-0">
               <TextField
                 fullWidth
                 value={state.email}
                 label="Email"
-                onKeyDown={handleKeyPress}
-                onChange={setEmail}
-                error={state.hasError && state.email === ""}
-                helperText={state.hasError && state.email === "" && "Email is required"}
-              />
+                onChange={setEmail}/>
             </Grid>
             <Grid item className="col-6 p-0 mt-3">
               <TextField
                 fullWidth
                 value={state.username}
                 label="Username"
-                onKeyDown={handleKeyPress}
-                onChange={setUsername}
-                error={state.hasError && state.username === ""}
-                helperText={state.hasError && state.username === "" && "Username is required"}
-              />
+                onChange={setUsername}/>
             </Grid>
             <Grid item className="col-6 p-0 mt-3">
               <TextField
@@ -177,11 +213,7 @@ const RegisterPage = (props: AuthManagerProps): JSX.Element => {
                 value={state.password}
                 label="Password"
                 type="password"
-                onKeyDown={handleKeyPress}
-                onChange={setPassword}
-                error={state.hasError && state.password === ""}
-                helperText={state.hasError && state.password === "" && "Password is required"}
-              />
+                onChange={setPassword}/>
             </Grid>
             <Grid item className="col-6 p-0 mt-3">
               <TextField
@@ -189,67 +221,89 @@ const RegisterPage = (props: AuthManagerProps): JSX.Element => {
                 value={state.confirmPassword}
                 label="Confirm Password"
                 type="password"
-                onKeyDown={handleKeyPress}
-                onChange={setConfirmPassword}
-                error={state.hasError && state.confirmPassword === ""}
-                helperText={state.hasError && state.confirmPassword === "" && "Confirm Password is required"}
-              />
+                onChange={setConfirmPassword}/>
             </Grid>
-            <Grid>
-              <Grid item>
-                <Button
-                  variant={state.userType === "student" ? "contained" : "outlined"}
-                  onClick={() => setUserType("student")}
-                >
-                  Student
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  variant={state.userType === "company" ? "contained" : "outlined"}
-                  onClick={() => setUserType("company")}
-                >
-                  Company
-                </Button>
-              </Grid>
-            </Grid>
-            {state.userType === "company" && (
-              <Grid item className="col-6 p-0 mt-3">
-                <TextField
-                  fullWidth
-                  value={state.name}
-                  label="Company Name"
-                  onKeyDown={handleKeyPress}
-                  onChange={setName}
-                />
-              </Grid>
-            )}
-            <Grid item className="col-4 p-0 mt-3">
+
+            {
+              state.type === RegistrationType.COMPANY &&
+              (
+                <Grid item className="col-6 p-0 mt-3">
+                  <TextField
+                    fullWidth
+                    value={state.name}
+                    label="Company Name"
+                    onChange={setName}
+                  />
+                </Grid>
+              )
+            }
+
+            {
+              state.type === RegistrationType.STUDENT &&
+              (
+                <>
+                  <Grid item className="col-6 p-0 mt-3">
+                    <TextField
+                      fullWidth
+                      value={state.firstName}
+                      label="Name"
+                      onChange={setFirstName}
+                    />
+                  </Grid>
+                  <Grid item className="col-6 p-0 mt-3">
+                    <TextField
+                      fullWidth
+                      value={state.lastName}
+                      label="Last Name"
+                      onChange={setLastName}
+                    />
+                  </Grid>
+                  <Grid item className="col-6 p-0 mt-3">
+                    <TextField
+                      fullWidth
+                      value={state.description}
+                      label="Description"
+                      onChange={setDescription}
+                    />
+                  </Grid>
+                  <Grid item className="col-6 p-0 mt-3">
+                    <TextField
+                      fullWidth
+                      value={state.dateOfBirth}
+                      label="Date of Birth"
+                      type={'date'}
+                      onChange={setDateOfBirth}
+                    />
+                  </Grid>
+                </>
+              )
+            }
+
+            <Grid item className="my-auto col-4">
               <Button
+                disabled={state.type === null}
                 onClick={handleRegister}
                 fullWidth
                 variant="contained"
-                size="small"
+                size="large"
               >
                 <span className="text-transform-none" style={{ fontSize: "2rem" }}>
                   Register
                 </span>
               </Button>
-              <Nav.Link href="/login">
-                Already have an account? Log in
-              </Nav.Link>
-              {state.hasError && state.errorMessage && (
-                <Typography variant="body2" color="error">
-                  {state.errorMessage}
-                </Typography>
-              )}
+            </Grid>
+            <Grid item justifyItems={'end'}>
+              Already have an account? 
+              <Link to="/login">
+                 Log in
+              </Link>
             </Grid>
           </Grid>
         </Container>
       </Grid>
     </Grid>
   );
-  
-              }
+
+}
 
 export default RegisterPage;

@@ -41,7 +41,7 @@ public class EmploymentInfo {
     public EmploymentInfo(EmploymentInfoCreationModel employmentInfoCreationModel, Student student, JobPosition jobPosition, Company company) {
         this.id = UUID.randomUUID();
         this.student = student;
-        this.companyId = company.getUser().getId();
+        this.companyId = company.getId();
         this.companyName = company.getName();
         this.jobPosition = jobPosition;
         this.startedAt = employmentInfoCreationModel.getStartedAt();

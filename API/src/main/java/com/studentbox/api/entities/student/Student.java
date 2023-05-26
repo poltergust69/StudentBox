@@ -17,12 +17,12 @@ import java.util.UUID;
 @Entity
 @Table(name="students")
 @NoArgsConstructor
-public class Student {
+public class Student{
     @Id
     private UUID id;
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     private String firstName;

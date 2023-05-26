@@ -12,7 +12,5 @@ public interface AuthService {
     AuthResponseModel login(User user, Company company, AuthRequestModel requestModel) throws JsonProcessingException;
     AuthResponseModel login(User user, Student student, AuthRequestModel requestModel) throws JsonProcessingException;
     AuthResponseModel refreshToken(User user, String refreshToken) throws JsonProcessingException;
-    AuthResponseModel refreshToken(Company company, String refreshToken) throws JsonProcessingException;
-    AuthResponseModel refreshToken(Student student, String refreshToken) throws JsonProcessingException;
     String encodePassword(String password);
 }

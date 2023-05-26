@@ -2,6 +2,7 @@ package com.studentbox.api.web;
 
 import com.studentbox.api.common.PermissionEvaluator;
 import com.studentbox.api.models.company.RegisterCompanyDetails;
+import com.studentbox.api.models.student.RegisterStudentDetails;
 import com.studentbox.api.models.student.StudentDetailsModel;
 import com.studentbox.api.models.student.certificate.CertificateCreationModel;
 import com.studentbox.api.models.student.certificate.CertificateModel;
@@ -145,11 +146,10 @@ public class StudentController {
     }
 
     @PostMapping("/register")
-    @PreAuthorize("isAnonymous()")
     public ResponseEntity register(
-            RegisterUserDetails registerUserDetails
+            RegisterStudentDetails registerStudentDetails
     ) {
-        studentService.registerStudent(registerUserDetails);
+        studentService.registerStudent(registerStudentDetails);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

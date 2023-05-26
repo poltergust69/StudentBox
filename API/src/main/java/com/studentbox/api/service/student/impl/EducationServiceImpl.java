@@ -75,5 +75,4 @@ public class EducationServiceImpl implements EducationService {
         studentEducationRepository.delete(studentEducation);
     }
 
-
 }

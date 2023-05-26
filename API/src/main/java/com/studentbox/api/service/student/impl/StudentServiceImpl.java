@@ -1,32 +1,33 @@
 package com.studentbox.api.service.student.impl;
 
-import com.studentbox.api.entities.company.Company;
 import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.entities.student.skill.Skill;
 import com.studentbox.api.entities.student.skill.StudentSkill;
 import com.studentbox.api.entities.user.User;
 import com.studentbox.api.entities.user.enums.RoleType;
 import com.studentbox.api.exception.NotFoundException;
-import com.studentbox.api.models.company.RegisterCompanyDetails;
+import com.studentbox.api.models.student.RegisterStudentDetails;
 import com.studentbox.api.models.student.certificate.CertificateCreationModel;
 import com.studentbox.api.models.student.certificate.CertificateModel;
 import com.studentbox.api.models.student.education.EducationCreationModel;
 import com.studentbox.api.models.student.education.EducationInfoModel;
 import com.studentbox.api.models.student.employment.EmploymentInfoCreationModel;
 import com.studentbox.api.models.student.skill.SkillModel;
-import com.studentbox.api.models.user.RegisterUserDetails;
 import com.studentbox.api.repository.student.StudentRepository;
 import com.studentbox.api.service.student.*;
 import com.studentbox.api.service.user.UserService;
 import com.studentbox.api.utils.mappers.SkillMapper;
+import com.studentbox.api.utils.validators.StudentValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.STUDENT_NOT_FOUND_EXCEPTION_MESSAGE;
-import static com.studentbox.api.utils.validators.CompanyDetailsValidator.validateCompanyDetails;
 
 @Service
 @AllArgsConstructor
@@ -38,6 +39,7 @@ public class StudentServiceImpl implements StudentService {
     private final EducationService educationService;
     private final CertificateService certificateService;
     private final EmploymentInfoService employmentInfoService;
+    private final StudentValidator studentValidator;
 
     @Override
     public Student findLoggedInStudent() {
@@ -120,14 +122,20 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void registerStudent(RegisterUserDetails details) {
+    public void registerStudent(RegisterStudentDetails details) {
+        studentValidator.validateStudentRegistrationDetails(details);
 
-        User user = userService.registerUser(details, RoleType.valueOf("COMPANY"));
+        User user = userService.registerUser(details, RoleType.STUDENT);
 
-        Student student=new Student();
+        Student student = new Student();
+
+        student.setId(UUID.randomUUID());
         student.setUser(user);
-//        student.setId(details.g);
+        student.setFirstName(details.getFirstName());
+        student.setLastName(details.getLastName());
+        student.setDateOfBirth(LocalDate.parse(details.getDateOfBirth()));
+        student.setDescription(details.getDescription());
+
         studentRepository.save(student);
     }
-
 }

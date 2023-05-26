@@ -125,6 +125,4 @@ public class ForumController {
         postService.likeReply(postId, replyId);
         return ResponseEntity.ok().build();
     }
-
-
 }

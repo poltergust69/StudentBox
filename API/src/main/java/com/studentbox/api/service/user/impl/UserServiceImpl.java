@@ -23,6 +23,7 @@ import com.studentbox.api.service.user.RoleService;
 import com.studentbox.api.service.user.SendGridService;
 import com.studentbox.api.service.user.UserService;
 import com.studentbox.api.utils.containers.SharedMethodContainer;
+import com.studentbox.api.utils.validators.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,8 +38,7 @@ import static com.studentbox.api.utils.containers.ConstantsContainer.STUDENT_ROL
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.*;
 import static com.studentbox.api.utils.containers.LoggerMessageContainer.ADMIN_USER_ADDED_MESSAGE;
 import static com.studentbox.api.utils.containers.LoggerMessageContainer.ADMIN_USER_NOT_ADDED_MESSAGE;
-import static com.studentbox.api.utils.validators.UserDetailsValidator.validateUserDetails;
-import static com.studentbox.api.utils.validators.UserDetailsValidator.validateUserPassword;
+import static com.studentbox.api.utils.containers.SharedMethodContainer.validateUserPassword;
 import static java.util.Objects.isNull;
 
 @Service
@@ -50,9 +50,10 @@ public class UserServiceImpl implements UserService {
     private final RoleService roleService;
     private final SendGridService sendGridService;
     private final ForgotPasswordRequestRepository forgotPasswordRequestRepository;
+    private final UserValidator userValidator;
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    public UserServiceImpl(UserRepository userRepository, StudentRepository studentRepository, CompanyRepository companyRepository, AuthService authService, RoleService roleService, SendGridService sendGridService, ForgotPasswordRequestRepository forgotPasswordRequestRepository) {
+    public UserServiceImpl(UserRepository userRepository, StudentRepository studentRepository, CompanyRepository companyRepository, AuthService authService, RoleService roleService, SendGridService sendGridService, ForgotPasswordRequestRepository forgotPasswordRequestRepository, UserValidator userValidator) {
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;
         this.companyRepository = companyRepository;
@@ -60,6 +61,7 @@ public class UserServiceImpl implements UserService {
         this.roleService = roleService;
         this.sendGridService = sendGridService;
         this.forgotPasswordRequestRepository = forgotPasswordRequestRepository;
+        this.userValidator = userValidator;
     }
 
     @Value("${initialuser.username}")
@@ -93,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registerUser(RegisterUserDetails details, RoleType roleType) {
-        validateUserDetails(details);
+        userValidator.validateUserRegistrationDetails(details);
 
         User user = new User();
 
@@ -102,7 +104,6 @@ public class UserServiceImpl implements UserService {
         user.setEmail(details.getEmail());
         user.setUsername(details.getUsername());
         user.setRole(roleService.getRoleByName(roleType.name()));
-
         user.setPassword(authService.encodePassword(details.getPassword()));
 
         return userRepository.save(user);
@@ -112,24 +113,10 @@ public class UserServiceImpl implements UserService {
     public AuthResponseModel login(AuthRequestModel authRequestModel) throws JsonProcessingException {
         User user = userRepository.findUserByUsernameOrEmail(
                 authRequestModel.getUser(),
-                authRequestModel.getUser()
-        ).orElseThrow(NotAuthenticatedException::new);
-
-        if(user.getRole().getAuthority().equals(STUDENT_ROLE)){
-            Student student = studentRepository.findById(user.getId()).orElseThrow(
-                    () -> new NotFoundException(String.format(STUDENT_NOT_FOUND_EXCEPTION_MESSAGE, user.getUsername()))
-            );
-            return authService.login(user, student, authRequestModel);
-        }
-        else if(user.getRole().getAuthority().equals(COMPANY_ROLE)){
-            Company company = companyRepository.findById(user.getId()).orElseThrow(
-                    () -> new NotFoundException(String.format(COMPANY_NOT_FOUND_EXCEPTION_MESSAGE, user.getUsername()))
-            );
-            return authService.login(user, company, authRequestModel);
-        }
-        else{
-            return authService.login(user, authRequestModel);
-        }
+                authRequestModel.getUser())
+            .orElseThrow(NotAuthenticatedException::new);
+        
+        return authService.login(user, authRequestModel);
     }
 
     @Override

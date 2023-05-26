@@ -38,11 +38,11 @@ const AppPage: React.FC<EmptyProps> = (props: EmptyProps) => {
     },
     {
       path: "register",
-      element: <RegisterPage callback={updateChangeCounter} />,
+      element: <RegisterPage/>,
     },
     {
       path: "forum",
-      element: <ForumPage />,
+      element: <ForumPage/>,
     },
     {
       path: "forum/posts/:postId",

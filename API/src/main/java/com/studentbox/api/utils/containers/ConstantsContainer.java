@@ -42,4 +42,5 @@ public class ConstantsContainer {
     public static final String USER_ID_PARAM = "id";
     public static final String EXPIRY_PARAM = "exp";
     public static final String DATA_PARAM = "sub";
+    public static final int MINIMUM_AGE_OF_USER = 18;
 }

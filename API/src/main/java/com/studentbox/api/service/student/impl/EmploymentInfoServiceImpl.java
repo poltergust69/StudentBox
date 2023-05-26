@@ -56,4 +56,5 @@ public class EmploymentInfoServiceImpl implements EmploymentInfoService {
 
         employmentInfoRepository.delete(employmentInfo);
     }
+
 }

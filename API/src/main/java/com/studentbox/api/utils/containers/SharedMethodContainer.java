@@ -6,6 +6,7 @@ import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.entities.student.employment.EmploymentInfo;
 import com.studentbox.api.entities.student.skill.Skill;
 import com.studentbox.api.exception.NotAuthenticatedException;
+import com.studentbox.api.exception.NotValidException;
 import org.json.JSONObject;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -13,8 +14,10 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
 
 import static com.studentbox.api.utils.containers.ConstantsContainer.*;
+import static com.studentbox.api.utils.containers.ExceptionMessageContainer.NOT_VALID_PASSWORD_EXCEPTION_MESSAGE;
 import static com.studentbox.api.utils.containers.ExceptionMessageContainer.UTILITY_CLASS_INITIALIZED_EXCEPTION_MESSAGE;
 import static java.util.Objects.isNull;
 
@@ -126,5 +129,49 @@ public class SharedMethodContainer {
         }
 
         return score.get();
+    }
+
+    public static boolean isNameInvalid(String name) {
+        return isNull(name) || name.isBlank() || name.trim().length() == 0;
+    }
+
+    public static boolean isDescriptionInvalid(String description){
+        return !isNull(description) && description.length() > 1000;
+    }
+
+    public static boolean isDateOfBirthInvalid(String dateOfBirth){
+        return isNull(dateOfBirth) || dateOfBirth.trim().length() != 10 || LocalDate.parse(dateOfBirth).isAfter(LocalDate.now().minusYears(MINIMUM_AGE_OF_USER));
+    }
+    public static void validateUserPassword(String password){
+        if(isPasswordInvalid(password)){
+            throw new NotValidException(NOT_VALID_PASSWORD_EXCEPTION_MESSAGE);
+        }
+    }
+
+    public static boolean isUsernameSymbolsInvalid(String username) {
+        if (isNull(username))
+            return true;
+        Matcher specialCharacters = SPECIAL_CHARACTER_PATTERN.matcher(username);
+        Matcher usernameCharacters = USERNAME_PATTERN.matcher(username);
+
+        if(username.contains("_") || username.contains("-") || username.contains("."))
+            return !usernameCharacters.matches() || !specialCharacters.matches();
+        else
+            return !usernameCharacters.matches();
+    }
+
+    public static boolean isEmailInvalid(String email){
+        Matcher emailMatcher = EMAIL_PATTERN.matcher(email);
+        return !emailMatcher.matches();
+    }
+
+    public static boolean isPasswordInvalid(String password){
+        Matcher passwordMatcher = PASSWORD_PATTERN.matcher(password);
+        return !passwordMatcher.matches();
+    }
+
+    public static boolean isAvatarUrlInvalid(String avatarUrl){
+        Matcher avatarMatcher = URL_PATTERN.matcher(avatarUrl);
+        return !avatarMatcher.matches();
     }
 }

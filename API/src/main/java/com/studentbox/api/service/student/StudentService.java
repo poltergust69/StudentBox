@@ -2,6 +2,7 @@ package com.studentbox.api.service.student;
 
 import com.studentbox.api.entities.student.Student;
 import com.studentbox.api.models.company.RegisterCompanyDetails;
+import com.studentbox.api.models.student.RegisterStudentDetails;
 import com.studentbox.api.models.student.certificate.CertificateCreationModel;
 import com.studentbox.api.models.student.certificate.CertificateModel;
 import com.studentbox.api.models.student.education.EducationCreationModel;
@@ -26,6 +27,5 @@ public interface StudentService {
     void deleteCertificate(String id);
     void addEmploymentInfoToStudent(EmploymentInfoCreationModel employmentInfoCreationModel);
     void deleteEmploymentInfo(String id);
-
-    public void registerStudent(RegisterUserDetails details);
+    void registerStudent(RegisterStudentDetails details);
 }

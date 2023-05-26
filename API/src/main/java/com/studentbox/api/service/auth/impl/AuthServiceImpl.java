@@ -73,20 +73,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseModel refreshToken(Company company, String refreshToken) throws JsonProcessingException {
-        String accessToken = generateAccessToken(company);
-
-        return new AuthResponseModel(accessToken, refreshToken);
-    }
-
-    @Override
-    public AuthResponseModel refreshToken(Student student, String refreshToken) throws JsonProcessingException {
-        String accessToken = generateAccessToken(student);
-
-        return new AuthResponseModel(accessToken, refreshToken);
-    }
-
-    @Override
     public String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }

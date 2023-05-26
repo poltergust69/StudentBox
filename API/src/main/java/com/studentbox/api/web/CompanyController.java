@@ -56,7 +56,6 @@ public class CompanyController {
     }
 
     @PostMapping("/register")
-    @PreAuthorize("isAnonymous()")
     public ResponseEntity register(
             RegisterCompanyDetails registerCompanyDetails
     ) {

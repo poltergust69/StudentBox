@@ -15,3 +15,8 @@ export interface PageModel<T> {
   pageSize: number;
   totalPageCount: number;
 }
+
+export interface ValidationError{
+  error: string|null,
+  hasError: boolean
+}
