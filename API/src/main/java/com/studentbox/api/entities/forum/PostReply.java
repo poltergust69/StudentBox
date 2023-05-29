@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -32,6 +33,12 @@ public class PostReply {
 
     @Column(name="modified_at")
     private Timestamp modifiedAt;
+
+    @ManyToMany()
+    @JoinTable(name = "post_reply_likes",
+                joinColumns = @JoinColumn(name="reply_id"),
+                inverseJoinColumns = @JoinColumn(name="user_id"))
+    private List<User> likes;
 
     public PostReply(Post post, User author, String content) {
         this.id = UUID.randomUUID();

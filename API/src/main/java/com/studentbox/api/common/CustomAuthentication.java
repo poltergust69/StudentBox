@@ -57,16 +57,18 @@ public class CustomAuthentication implements Authentication {
         return name;
     }
 
-    public static UUID getAuthenticationPrincipal() {
-        CustomAuthentication authentication = getAuthentication();
-
-        if(authentication.getPrincipal() instanceof String id){
-            return UUID.fromString(id);
-        }
-        throw new NotAuthenticatedException();
-    }
-
     public static CustomAuthentication getAuthentication() {
         return (CustomAuthentication) SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    @Override
+    public String toString() {
+        return "CustomAuthentication{" +
+                "userRole=" + userRole +
+                ", credentials=" + credentials +
+                ", details=" + details +
+                ", principal=" + principal +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

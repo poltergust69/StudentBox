@@ -1,0 +1,16 @@
+.likeButton {
+  transition: 200ms !important;
+}
+
+.likeButton-flipped {
+  transform: rotateX(180deg);
+}
+
+.postListItem-link {
+  display: flex;
+  transition: 250ms !important;
+}
+
+.postListItem-link:hover {
+  left: 10px;
+}

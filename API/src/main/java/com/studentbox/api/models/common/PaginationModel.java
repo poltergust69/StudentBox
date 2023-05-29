@@ -1,6 +1,5 @@
 package com.studentbox.api.models.common;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Objects;
@@ -9,7 +8,7 @@ import static com.studentbox.api.utils.containers.ConstantsContainer.DEFAULT_PAG
 import static com.studentbox.api.utils.containers.ConstantsContainer.DEFAULT_PAGE_SIZE;
 
 @Data
-public class PaginationModel {
+public class    PaginationModel {
     private Integer pageIndex;
     private Integer pageSize;
 
